@@ -130,55 +130,55 @@ var Reticulum = (function () {
         }
     };
 
-    var gazeOut = function(three_object) {
-        three_object.hitTime = 0;
-        if (three_object.ongazeout != undefined) {
-            three_object.ongazeout();
+    var gazeOut = function(threeObject) {
+        threeObject.hitTime = 0;
+        if (threeObject.ongazeout != undefined) {
+            threeObject.ongazeout();
         }
     };
 
-    var gazeOver = function(three_object) {
+    var gazeOver = function(threeObject) {
         var objectsCore;
-        three_object.hitTime = clock.getElapsedTime();
+        threeObject.hitTime = clock.getElapsedTime();
         //There has to be a better  way...
         if( reticle ) {
-            objectsCore = settings.camera.position.distanceTo(three_object.position);
-            objectsCore -= three_object.geometry.boundingSphere.radius;
+            objectsCore = settings.camera.position.distanceTo(threeObject.position);
+            objectsCore -= threeObject.geometry.boundingSphere.radius;
             reticleScale = positionAndReizeReticle( objectsCore );
             scaleReticle( 2 );
         }
 
-        if (three_object.ongazeover != undefined) {
-            three_object.ongazeover();
+        if (threeObject.ongazeover != undefined) {
+            threeObject.ongazeover();
         }
     };
 
-    var gazeLong = function( three_object ) {
+    var gazeLong = function( threeObject ) {
         var elapsed = clock.getElapsedTime();
-        if( elapsed - three_object.hitTime >= settings.gazingDuration ) {
-            if (three_object.ongazelong != undefined) {
-                three_object.ongazelong();
+        if( elapsed - threeObject.hitTime >= settings.gazingDuration ) {
+            if (threeObject.ongazelong != undefined) {
+                threeObject.ongazelong();
             }
             //Reset the clock
-            three_object.hitTime = elapsed;
+            threeObject.hitTime = elapsed;
         }
 
     }
 
 
     return {
-        addCollider: function (three_object) {
-            three_object.gazeable = true;
-            collisionList.push(three_object);
+        addCollider: function (threeObject) {
+            threeObject.gazeable = true;
+            collisionList.push(threeObject);
         },
-        removeCollider: function (three_object) {
-            var index = collisionList.indexOf(three_object);
-            three_object.gazeable = false;
+        removeCollider: function (threeObject) {
+            var index = collisionList.indexOf(threeObject);
+            threeObject.gazeable = false;
             if (index > -1) {
                 collisionList.splice(index, 1);
             }
         },
-        loop: function (three_object) {
+        loop: function (threeObject) {
             detectHit();
         },
         destroy: function (options) {

@@ -45,6 +45,7 @@ Add object to be tracked
 ```
 Reticulum.addCollider(object);
 
+```
 
 Add Reticulum to your animation loop 
 

@@ -2,6 +2,7 @@
 
 > A simple gaze interaction manager for VR with Three.js. [See an example](http://gqpbj.github.io/Reticulum/example/)
 
+![Material Design](http://material-design.storage.googleapis.com/publish/vr_v_1/vrexternal/0B7WCemMG6e0VaGR4NEIxUlZ0VmM/interactivepatterns_displayreticle.png)
 
 ##Purpose
 Reticulum attempts to follow Google's interactive pattern for the [display reticle](http://www.google.com/design/spec-vr/interactive-patterns/display-reticle.html). It creates the illusion of depth by projecting spatially onto targeted objects while maintaining a fixed size so that it is easy to see at all times.

@@ -65,7 +65,7 @@ var Reticulum = (function () {
 
     var positionAndReizeCrosshair = function( transformZ ) {
 
-        var scaleSize;
+        var distance;
         //var resize = scale || 1; 
         var z = transformZ || settings.camera.near+0.01; //To stop flashing place it a little bit in front of the camera (i.e. add 0.01)
 
@@ -75,10 +75,10 @@ var Reticulum = (function () {
 
         //Force crosshair to appear the same size
         //http://answers.unity3d.com/questions/419342/make-gameobject-size-always-be-the-same.html
-        scaleSize = settings.camera.position.distanceTo(crosshair.position);
-        scaleCrosshair( 1, scaleSize );
+        distance = Math.abs(camera.position.z - crosshair.position.z) - Math.abs(camera.position.z);
+        scaleCrosshair( 1, distance );
 
-        return scaleSize;
+        return distance;
     };
 
     var scaleCrosshair = function( scale, size ) {

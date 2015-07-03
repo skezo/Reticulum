@@ -1,0 +1,8 @@
+{
+    "name": "reticulum",
+    "version": "1.0.0",
+    "main": "reticulum.js",
+    "ignore": [
+        "example"
+    ]
+}

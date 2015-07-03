@@ -1,0 +1,32 @@
+{
+  "name": "reticulum",
+  "title": "Reticulum",
+  "description": "A gaze interaction manager for VR with three.js, supporting depth.",
+  "version": "1.0.0",
+  "homepage": "https://github.com/GQPBJ/reticulum",
+  "license": "MIT",
+  "keywords": [
+    "vr",
+    "reticle",
+    "gaze",
+    "cardboard"
+  ],
+  "author": {
+    "name": "Godfrey Q",
+    "email": "admin@gqpbj.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/GQPBJ/reticulum.git"
+  },
+  "bugs": {
+    "url": "https://github.com/GQPBJ/reticulum/issues"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "main": "reticulum.js",
+  "engines": {
+    "node": ">=0.8.0"
+  },
+  "scripts": {}
+}

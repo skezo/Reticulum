@@ -1,6 +1,6 @@
 #Reticulum
 
-> A gaze interaction manager for VR with three.js, supporting depth.  [http://gqpbj.github.io/reticulum/example](http://gqpbj.github.io/reticulum/example)
+> A gaze interaction manager for VR with three.js, supporting depth.  [http://gqpbj.github.io/Reticulum/example/](http://gqpbj.github.io/Reticulum/example/)
 
 
 ## How to use

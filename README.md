@@ -27,7 +27,7 @@ Load Three.js and include the Reticulum.js file. You might also want to use the 
 
 Call the Reticulum initializer function and set your options.
 
-**Note:** You must define the `camera` option... it is required. 
+**Note:** You must define the `camera`... it is required. 
 
 ```javascript
 Reticulum.init(camera, {

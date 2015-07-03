@@ -122,7 +122,7 @@ var Reticulum = (function () {
                 gazeOut(INTERSECTED);
                 if( crosshair ) {
                     //Scale Crosshair 
-                    scaleCrosshair();
+                    positionAndReizeCrosshair();
                 }
             }
             INTERSECTED = null;
@@ -154,7 +154,6 @@ var Reticulum = (function () {
     };
 
     var gazeLong = function( three_object ) {
-        //We ready for a long gaze
         var elapsed = clock.getElapsedTime();
         if( elapsed - three_object.hitTime >= settings.gazing_duration ) {
             if (three_object.ongazelong != undefined) {

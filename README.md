@@ -39,7 +39,7 @@ Reticulum.init(camera, {
 		tube: 0.001
 	}
 });
-
+```
 
 ### 3. Define targeted objects
 

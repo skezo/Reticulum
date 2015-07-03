@@ -185,6 +185,11 @@ var Reticulum = (function () {
             //clean up
         },
         init: function (camera, options) {
+            var c = camera || null;
+            if (c === null) {
+                console.log("ERROR: Camera was not defined");
+                return;
+            }
             initiate(camera, options);
         }
     };

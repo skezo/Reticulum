@@ -17,10 +17,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/GQPBJ/reticulum.git"
+    "url": "git://github.com/GQPBJ/Reticulum.git"
   },
   "bugs": {
-    "url": "https://github.com/GQPBJ/reticulum/issues"
+    "url": "https://github.com/GQPBJ/Reticulum/issues"
   },
   "dependencies": {},
   "devDependencies": {},

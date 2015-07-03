@@ -89,7 +89,7 @@ var Reticulum = (function () {
 
     var detectHit = function() {
         //Update ray
-        raycaster.setFromCamera( vector, camera );
+        raycaster.setFromCamera( vector, settings.camera );
         //
         var intersects = raycaster.intersectObjects(collisionList);
         //Detect

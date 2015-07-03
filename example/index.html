@@ -87,8 +87,8 @@ for ( var i = 0; i < 2000; i ++ ) {
 // --- Reticulum ---
 // initiate Reticulum so it loads up 
 Reticulum.init(camera, {
-	gazing_duration: 2.5,
-	crosshair: {
+	gazingDuration: 2.5,
+	reticle: {
 		visible: true,
 		color: 0xcc0000,
 		radius: 0.005,
@@ -96,7 +96,7 @@ Reticulum.init(camera, {
 	}
 });
 
-// IMPORTANT add camera to cene if you want to see a crosshair 
+// IMPORTANT add camera to cene if you want to see a reticle 
 scene.add(camera);
 
 

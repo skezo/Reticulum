@@ -31,8 +31,8 @@ Call the Reticulum initializer function and set your options.
 
 ```javascript
 Reticulum.init(camera, {
-	gazing_duration: 2.5,
-	crosshair: {
+	gazingDuration: 2.5,
+	reticle: {
 		visible: true,
 		color: 0xcc0000,
 		radius: 0.005,

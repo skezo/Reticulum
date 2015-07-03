@@ -10,32 +10,32 @@ var Reticulum = (function () {
     var raycaster;
     var vector;
     var clock;
-    var crosshair;
-    var crosshairScale;
+    var reticle;
+    var reticleScale;
     var settings = {};
 
     //Required from user
     settings.camera = null;
 
     //Gazing
-    settings.gazing_duration = 2.5;
+    settings.gazingDuration = 2.5;
     
-    //Crosshair
-    settings.crosshair = {};
-    settings.crosshair.visible = true;
-    settings.crosshair.color = 0xcc0000;
-    settings.crosshair.radius = 0.005;
-    settings.crosshair.tube = 0.001;
+    //Reticle
+    settings.reticle = {};
+    settings.reticle.visible = true;
+    settings.reticle.color = 0xcc0000;
+    settings.reticle.radius = 0.005;
+    settings.reticle.tube = 0.001;
 
     var initiate = function (camera, options) {
         //Update Settings:
         if (options) {
             settings.camera = camera || settings.camera;
-            settings.gazing_duration = options.gazing_duration || settings.gazing_duration;
-            settings.crosshair.visible = options.crosshair.visible || settings.crosshair.visible;
-            settings.crosshair.color = options.crosshair.color || settings.crosshair.color;
-            settings.crosshair.radius = options.crosshair.radius || settings.crosshair.radius;
-            settings.crosshair.tube = options.crosshair.tube || settings.crosshair.tube;
+            settings.gazingDuration = options.gazingDuration || settings.gazingDuration;
+            settings.reticle.visible = options.reticle.visible || settings.reticle.visible;
+            settings.reticle.color = options.reticle.color || settings.reticle.color;
+            settings.reticle.radius = options.reticle.radius || settings.reticle.radius;
+            settings.reticle.tube = options.reticle.tube || settings.reticle.tube;
         }
         //
         raycaster = new THREE.Raycaster();
@@ -44,47 +44,47 @@ var Reticulum = (function () {
         //
         clock = new THREE.Clock(true);
 
-        if(settings.crosshair.visible) {
-            createCrosshair();
+        if(settings.reticle.visible) {
+            createReticle();
         }
     };
 
-    var createCrosshair = function() {
-        var geometry = new THREE.TorusGeometry(settings.crosshair.radius, settings.crosshair.tube, 2, 12);
+    var createReticle = function() {
+        var geometry = new THREE.TorusGeometry(settings.reticle.radius, settings.reticle.tube, 2, 12);
         var material = new THREE.MeshBasicMaterial({
-            color: settings.crosshair.color
+            color: settings.reticle.color
         });
-        crosshair = new THREE.Mesh(geometry, material);
-        crosshair.visible = settings.crosshair.visible;
+        reticle = new THREE.Mesh(geometry, material);
+        reticle.visible = settings.reticle.visible;
 
         if(settings.camera) {
-            crosshairScale = positionAndReizeCrosshair();
-            settings.camera.add( crosshair );
+            reticleScale = positionAndReizeReticle();
+            settings.camera.add( reticle );
         }
     };
 
-    var positionAndReizeCrosshair = function( transformZ ) {
+    var positionAndReizeReticle = function( transformZ ) {
 
         var distance;
         //var resize = scale || 1; 
         var z = transformZ || settings.camera.near+0.01; //To stop flashing place it a little bit in front of the camera (i.e. add 0.01)
 
-        crosshair.position.x = 0;
-        crosshair.position.y = 0;
-        crosshair.position.z = Math.abs(z)*-1;
+        reticle.position.x = 0;
+        reticle.position.y = 0;
+        reticle.position.z = Math.abs(z)*-1;
 
-        //Force crosshair to appear the same size
+        //Force reticle to appear the same size
         //http://answers.unity3d.com/questions/419342/make-gameobject-size-always-be-the-same.html
-        distance = Math.abs(camera.position.z - crosshair.position.z) - Math.abs(camera.position.z);
-        scaleCrosshair( 1, distance );
+        distance = Math.abs(camera.position.z - reticle.position.z) - Math.abs(camera.position.z);
+        scaleReticle( 1, distance );
 
         return distance;
     };
 
-    var scaleCrosshair = function( scale, size ) {
+    var scaleReticle = function( scale, size ) {
         var scale = scale || 1;
-        var size = (size || crosshairScale) * scale;
-        crosshair.scale.set( size, size, size );
+        var size = (size || reticleScale) * scale;
+        reticle.scale.set( size, size, size );
     }
 
     var detectHit = function() {
@@ -120,9 +120,9 @@ var Reticulum = (function () {
             if (INTERSECTED) {
                 //GAZE OUT
                 gazeOut(INTERSECTED);
-                if( crosshair ) {
-                    //Scale Crosshair 
-                    positionAndReizeCrosshair();
+                if( reticle ) {
+                    //Scale reticle 
+                    positionAndReizeReticle();
                 }
             }
             INTERSECTED = null;
@@ -141,11 +141,11 @@ var Reticulum = (function () {
         var objectsCore;
         three_object.hitTime = clock.getElapsedTime();
         //There has to be a better  way...
-        if( crosshair ) {
+        if( reticle ) {
             objectsCore = settings.camera.position.distanceTo(three_object.position);
             objectsCore -= three_object.geometry.boundingSphere.radius;
-            crosshairScale = positionAndReizeCrosshair( objectsCore );
-            scaleCrosshair( 2 );
+            reticleScale = positionAndReizeReticle( objectsCore );
+            scaleReticle( 2 );
         }
 
         if (three_object.ongazeover != undefined) {
@@ -155,7 +155,7 @@ var Reticulum = (function () {
 
     var gazeLong = function( three_object ) {
         var elapsed = clock.getElapsedTime();
-        if( elapsed - three_object.hitTime >= settings.gazing_duration ) {
+        if( elapsed - three_object.hitTime >= settings.gazingDuration ) {
             if (three_object.ongazelong != undefined) {
                 three_object.ongazelong();
             }

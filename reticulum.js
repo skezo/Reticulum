@@ -27,10 +27,10 @@ var Reticulum = (function () {
     settings.crosshair.radius = 0.005;
     settings.crosshair.tube = 0.001;
 
-    var initiate = function (options) {
+    var initiate = function (camera, options) {
         //Update Settings:
         if (options) {
-            settings.camera = options.camera || settings.camera;
+            settings.camera = camera || settings.camera;
             settings.gazing_duration = options.gazing_duration || settings.gazing_duration;
             settings.crosshair.visible = options.crosshair.visible || settings.crosshair.visible;
             settings.crosshair.color = options.crosshair.color || settings.crosshair.color;
@@ -184,8 +184,8 @@ var Reticulum = (function () {
         destroy: function (options) {
             //clean up
         },
-        init: function (options) {
-            initiate(options);
+        init: function (camera, options) {
+            initiate(camera, options);
         }
     };
 })();

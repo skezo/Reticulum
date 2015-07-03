@@ -29,6 +29,8 @@
 <script src="js/webvr-manager.js"></script>
 <script src="../reticulum.js"></script>
 
+
+
 <script>
 //Setup three.js WebGL renderer
 var renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -84,8 +86,7 @@ for ( var i = 0; i < 2000; i ++ ) {
 // *******************************
 // --- Reticulum ---
 // initiate Reticulum so it loads up 
-Reticulum.init({
-	camera: camera,
+Reticulum.init(camera, {
 	gazing_duration: 2.5,
 	crosshair: {
 		visible: true,

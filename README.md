@@ -57,7 +57,6 @@ object.ongazeover = function(){
 	this.material.emissive.setHex( 0xffcc00 );
 }
 
-
 object.ongazeout = function(){
 	// have the object react when user looks away from it
 	this.material.emissive.setHex( 0xcc0000 );
@@ -81,7 +80,7 @@ Reticulum.loop()
 
 ### 6. Add Camera to scene
 
-If you require to display the reticle you will need to add the `camera` the the `scene`. 
+If you require to display the reticle you will need to add the `camera` to the `scene`. 
 
 ```
 scene.add(camera);

@@ -75,7 +75,7 @@ var Reticulum = (function () {
 
         //Force reticle to appear the same size
         //http://answers.unity3d.com/questions/419342/make-gameobject-size-always-be-the-same.html
-        distance = Math.abs(camera.position.z - reticle.position.z) - Math.abs(camera.position.z);
+        distance = Math.abs(settings.camera.position.z - reticle.position.z) - Math.abs(settings.camera.position.z);
         scaleReticle( 1, distance );
 
         return distance;
@@ -190,7 +190,7 @@ var Reticulum = (function () {
                 console.log("ERROR: Camera was not defined");
                 return;
             }
-            initiate(camera, options);
+            initiate(c, options);
         }
     };
 })();

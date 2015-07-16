@@ -67,7 +67,8 @@ var Reticulum = (function () {
 
         var distance;
         //var resize = scale || 1; 
-        var z = transformZ || settings.camera.near+0.01; //To stop flashing place it a little bit in front of the camera (i.e. add 0.01)
+        //var z = transformZ || settings.camera.near+0.01; //To stop flashing place it a little bit in front of the camera (i.e. add 0.01)
+        var z = transformZ || settings.camera.far; //Set it to its furthest viewing - this might be worth changing to a focus depth instead...
 
         reticle.position.x = 0;
         reticle.position.y = 0;
@@ -76,6 +77,7 @@ var Reticulum = (function () {
         //Force reticle to appear the same size
         //http://answers.unity3d.com/questions/419342/make-gameobject-size-always-be-the-same.html
         distance = Math.abs(settings.camera.position.z - reticle.position.z) - Math.abs(settings.camera.position.z);
+        console.log(distance)
         scaleReticle( 1, distance );
 
         return distance;

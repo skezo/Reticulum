@@ -1,4 +1,4 @@
-/*! Reticulum - v1.0.0 - 2015-07-03
+/*! Reticulum - v1.0.1 - 2015-07-03
  * http://gqpbj.github.io/
  *
  * Copyright (c) 2015 Godfrey Q;
@@ -22,6 +22,7 @@ var Reticulum = (function () {
     
     //Reticle
     settings.reticle = {};
+    settings.reticle.far = null;
     settings.reticle.visible = true;
     settings.reticle.color = 0xcc0000;
     settings.reticle.radius = 0.005;
@@ -36,6 +37,7 @@ var Reticulum = (function () {
             settings.reticle.color = options.reticle.color || settings.reticle.color;
             settings.reticle.radius = options.reticle.radius || settings.reticle.radius;
             settings.reticle.tube = options.reticle.tube || settings.reticle.tube;
+            settings.reticle.far = options.reticle.far || settings.camera.far-10.0;
         }
         //
         raycaster = new THREE.Raycaster();
@@ -67,8 +69,8 @@ var Reticulum = (function () {
 
         var distance;
         //var resize = scale || 1; 
-        //var z = transformZ || settings.camera.near+0.01; //To stop flashing place it a little bit in front of the camera (i.e. add 0.01)
-        var z = transformZ || settings.camera.far; //Set it to its furthest viewing - this might be worth changing to a focus depth instead...
+        //var z = transformZ || settings.camera.near+0.1; //To stop flashing place it a little bit in front of the camera (i.e. add 0.01)
+        var z = transformZ || settings.reticle.far; //Set it to its furthest viewing - this might be worth changing to a focus depth instead...
 
         reticle.position.x = 0;
         reticle.position.y = 0;
@@ -77,7 +79,6 @@ var Reticulum = (function () {
         //Force reticle to appear the same size
         //http://answers.unity3d.com/questions/419342/make-gameobject-size-always-be-the-same.html
         distance = Math.abs(settings.camera.position.z - reticle.position.z) - Math.abs(settings.camera.position.z);
-        console.log(distance)
         scaleReticle( 1, distance );
 
         return distance;
@@ -86,6 +87,7 @@ var Reticulum = (function () {
     var scaleReticle = function( scale, size ) {
         var scale = scale || 1;
         var size = (size || reticleScale) * scale;
+        console.log("scale:", scale, "size:", size)
         reticle.scale.set( size, size, size );
     }
 

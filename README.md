@@ -37,7 +37,8 @@ Reticulum.init(camera, {
 		visible: true,
 		color: 0xcc0000,
 		radius: 0.005,
-		tube: 0.001
+		tube: 0.001,
+		far: 1000 //Defines the reticle's resting point when no object has been targeted
 	}
 });
 ```

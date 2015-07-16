@@ -90,8 +90,15 @@ var Reticulum = (function () {
     }
 
     var detectHit = function() {
-        //Update ray
-        raycaster.setFromCamera( vector, settings.camera );
+        try {
+            raycaster.setFromCamera( vector, settings.camera );
+        } catch (e) {
+            //Assumes PerspectiveCamera for now...
+            raycaster.ray.origin.copy( settings.camera.position );
+            raycaster.ray.direction.set( vector.x, vector.y, 0.5 ).unproject( settings.camera ).sub( settings.camera.position ).normalize();
+        }
+
+
         //
         var intersects = raycaster.intersectObjects(collisionList);
         //Detect

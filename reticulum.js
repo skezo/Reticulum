@@ -1,4 +1,4 @@
-/*! Reticulum - v1.0.1 - 2015-07-03
+/*! Reticulum - v1.0.2 - 2015-07-16
  * http://gqpbj.github.io/
  *
  * Copyright (c) 2015 Godfrey Q;
@@ -54,7 +54,7 @@ var Reticulum = (function () {
     var createReticle = function() {
         var geometry = new THREE.TorusGeometry(settings.reticle.radius, settings.reticle.tube, 2, 12);
         var material = new THREE.MeshBasicMaterial({
-            color: settings.reticle.color
+            color: new THREE.Color(settings.reticle.color)
         });
         reticle = new THREE.Mesh(geometry, material);
         reticle.visible = settings.reticle.visible;
@@ -68,8 +68,6 @@ var Reticulum = (function () {
     var positionAndReizeReticle = function( transformZ ) {
 
         var distance;
-        //var resize = scale || 1; 
-        //var z = transformZ || settings.camera.near+0.1; //To stop flashing place it a little bit in front of the camera (i.e. add 0.01)
         var z = transformZ || settings.reticle.far; //Set it to its furthest viewing - this might be worth changing to a focus depth instead...
 
         reticle.position.x = 0;
@@ -87,7 +85,6 @@ var Reticulum = (function () {
     var scaleReticle = function( scale, size ) {
         var scale = scale || 1;
         var size = (size || reticleScale) * scale;
-        console.log("scale:", scale, "size:", size)
         reticle.scale.set( size, size, size );
     }
 

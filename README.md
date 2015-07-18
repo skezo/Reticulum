@@ -35,11 +35,12 @@ Call the Reticulum initializer function and set your options.
 Reticulum.init(camera, {
 	gazingDuration: 2.5,
 	reticle: {
+		far: 1000, //Defines the reticle's resting point when no object has been targete
 		visible: true,
 		color: 0xcc0000,
-		radius: 0.005,
-		tube: 0.001,
-		far: 1000 //Defines the reticle's resting point when no object has been targeted
+		innerRadius: 0.004,
+		outerRadius: 0.005,
+		scale: 2
 	}
 });
 ```
@@ -77,7 +78,7 @@ object.ongazelong = function(){
 Add Reticulum to your animation loop 
 
 ```
-Reticulum.loop()
+Reticulum.update()
 ```
 
 

@@ -1,4 +1,4 @@
-/*! Reticulum - v1.0.2 - 2015-07-16
+/*! Reticulum - v1.0.3 - 2015-07-18
  * http://gqpbj.github.io/
  *
  * Copyright (c) 2015 Godfrey Q;
@@ -11,7 +11,8 @@ var Reticulum = (function () {
     var vector;
     var clock;
     var reticle;
-    var reticleScale;
+    var newReticleScale;
+    var previousReticleScale;
     var settings = {};
 
     //Required from user
@@ -25,8 +26,9 @@ var Reticulum = (function () {
     settings.reticle.far = null;
     settings.reticle.visible = true;
     settings.reticle.color = 0xcc0000;
-    settings.reticle.radius = 0.005;
-    settings.reticle.tube = 0.001;
+    settings.reticle.innerRadius = 0.004;
+    settings.reticle.outerRadius = 0.005;
+    settings.reticle.scale = 2;
 
     var initiate = function (camera, options) {
         //Update Settings:
@@ -35,9 +37,10 @@ var Reticulum = (function () {
             settings.gazingDuration = options.gazingDuration || settings.gazingDuration;
             settings.reticle.visible = options.reticle.visible || settings.reticle.visible;
             settings.reticle.color = options.reticle.color || settings.reticle.color;
-            settings.reticle.radius = options.reticle.radius || settings.reticle.radius;
-            settings.reticle.tube = options.reticle.tube || settings.reticle.tube;
+            settings.reticle.innerRadius = options.reticle.innerRadius || settings.reticle.innerRadius;
+            settings.reticle.outerRadius = options.reticle.outerRadius || settings.reticle.outerRadius;
             settings.reticle.far = options.reticle.far || settings.camera.far-10.0;
+            settings.reticle.scale = options.reticle.scale || settings.reticle.scale;
         }
         //
         raycaster = new THREE.Raycaster();
@@ -52,15 +55,16 @@ var Reticulum = (function () {
     };
 
     var createReticle = function() {
-        var geometry = new THREE.TorusGeometry(settings.reticle.radius, settings.reticle.tube, 2, 12);
+        var geometry = new THREE.RingGeometry(  settings.reticle.innerRadius, settings.reticle.outerRadius, 32, 3, 0, Math.PI * 2 );
         var material = new THREE.MeshBasicMaterial({
-            color: new THREE.Color(settings.reticle.color)
+            color: new THREE.Color(settings.reticle.color),
+            side: THREE.FrontSide
         });
         reticle = new THREE.Mesh(geometry, material);
         reticle.visible = settings.reticle.visible;
 
         if(settings.camera) {
-            reticleScale = positionAndReizeReticle();
+            newReticleScale = positionAndReizeReticle();
             settings.camera.add( reticle );
         }
     };
@@ -84,15 +88,25 @@ var Reticulum = (function () {
 
     var scaleReticle = function( scale, size ) {
         var scale = scale || 1;
-        var size = (size || reticleScale) * scale;
+        var size = (size || newReticleScale) * scale;
         reticle.scale.set( size, size, size );
+    };
+
+    var scale = function() {
+        if( newReticleScale === previousReticleScale) {
+            return;
+        }
+    console.log( previousReticleScale, newReticleScale)
+        previousReticleScale = newReticleScale;
+        
     }
 
     var detectHit = function() {
         try {
             raycaster.setFromCamera( vector, settings.camera );
         } catch (e) {
-            //Assumes PerspectiveCamera for now...
+            //Assumes PerspectiveCamera for now... 
+            //Support for Three.js < rev70
             raycaster.ray.origin.copy( settings.camera.position );
             raycaster.ray.direction.set( vector.x, vector.y, 0.5 ).unproject( settings.camera ).sub( settings.camera.position ).normalize();
         }
@@ -105,7 +119,7 @@ var Reticulum = (function () {
 
             //Is it a new object?
             if( INTERSECTED != intersects[ 0 ].object ) {
-                //If old INTERSECTED not null reset and gazeout 
+                //If old INTERSECTED i.e. not null reset and gazeout 
                 if ( INTERSECTED ) {
                     gazeOut(INTERSECTED);
                 };
@@ -152,8 +166,8 @@ var Reticulum = (function () {
         if( reticle ) {
             objectsCore = settings.camera.position.distanceTo(threeObject.position);
             objectsCore -= threeObject.geometry.boundingSphere.radius;
-            reticleScale = positionAndReizeReticle( objectsCore );
-            scaleReticle( 2 );
+            newReticleScale = positionAndReizeReticle( objectsCore );
+            scaleReticle( settings.reticle.scale );
         }
 
         if (threeObject.ongazeover != undefined) {
@@ -186,8 +200,9 @@ var Reticulum = (function () {
                 collisionList.splice(index, 1);
             }
         },
-        loop: function (threeObject) {
+        update: function (threeObject) {
             detectHit();
+            scale();
         },
         destroy: function (options) {
             //clean up

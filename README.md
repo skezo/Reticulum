@@ -38,7 +38,7 @@ Reticulum.init(camera, {
 	gazingDuration: 2.5,
 	proximity: false,
 	reticle: {
-		far: 1000, //Defines the reticle's resting point when no object has been targete
+		far: 1000, //Defines the reticle's resting point when no object has been targeted
 		visible: true,
 		color: 0xcc0000,
 		innerRadius: 0.004,

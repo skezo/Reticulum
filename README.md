@@ -1,6 +1,6 @@
 #Reticulum
 
-> A simple gaze interaction manager for VR with Three.js. [See an example](http://gqpbj.github.io/Reticulum/example/)
+> A simple gaze interaction manager for VR with Three.js. [See an example](http://gqpbj.github.io/Reticulum/example/basic.html)
 
 ![Material Design](http://gqpbj.github.io/Reticulum/example/img/interactivepatterns_displayreticle.png)
 
@@ -10,6 +10,7 @@ Reticulum attempts to follow Google's interactive pattern for the [display retic
 
 ### Features:
 - Reticle projects spatially onto targeted objects
+- Display the reticle only when the user approaches a target that they can activate (when in camera view)
 - Avoids double vision
 - Gaze events for targeted objects `ongazeover`, `ongazeout` and `ongazelong`
 - Supports [fuse buttons](http://www.google.com/design/spec-vr/interactive-patterns/controls.html#controls-fuse-buttons) 
@@ -35,6 +36,7 @@ Call the Reticulum initializer function and set your options.
 ```javascript
 Reticulum.init(camera, {
 	gazingDuration: 2.5,
+	proximity: false,
 	reticle: {
 		far: 1000, //Defines the reticle's resting point when no object has been targete
 		visible: true,
@@ -93,7 +95,8 @@ scene.add(camera);
 
 ## Demos
 
-- [Basic Example](http://gqpbj.github.io/Reticulum/example/)
+- [Basic Example](http://gqpbj.github.io/Reticulum/example/basic.html)
+- [Proximity Example](http://gqpbj.github.io/Reticulum/example/proximity.html)
 
 
 ## Acknowledgements:

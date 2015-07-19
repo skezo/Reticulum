@@ -1,4 +1,4 @@
-/*! Reticulum - v1.0.3 - 2015-07-18
+/*! Reticulum - v1.0.4 - 2015-07-19
  * http://gqpbj.github.io/
  *
  * Copyright (c) 2015 Godfrey Q;
@@ -15,11 +15,17 @@ var Reticulum = (function () {
     var previousReticleScale;
     var settings = {};
 
+    var frustum;
+    var cameraViewProjectionMatrix;
+
     //Required from user
     settings.camera = null;
 
     //Gazing
     settings.gazingDuration = 2.5;
+
+    //Proximity
+    settings.proximity = false;
     
     //Reticle
     settings.reticle = {};
@@ -35,6 +41,7 @@ var Reticulum = (function () {
         if (options) {
             settings.camera = camera || settings.camera;
             settings.gazingDuration = options.gazingDuration || settings.gazingDuration;
+            settings.proximity = options.proximity || settings.proximity;
             settings.reticle.visible = options.reticle.visible || settings.reticle.visible;
             settings.reticle.color = options.reticle.color || settings.reticle.color;
             settings.reticle.innerRadius = options.reticle.innerRadius || settings.reticle.innerRadius;
@@ -45,6 +52,10 @@ var Reticulum = (function () {
         //
         raycaster = new THREE.Raycaster();
         vector = new THREE.Vector2(0, 0);
+
+        //
+        frustum = new THREE.Frustum();
+        cameraViewProjectionMatrix = new THREE.Matrix4();
 
         //
         clock = new THREE.Clock(true);
@@ -91,14 +102,30 @@ var Reticulum = (function () {
         var size = (size || newReticleScale) * scale;
         reticle.scale.set( size, size, size );
     };
+    
+    var proximity = function() {
 
-    var scale = function() {
-        if( newReticleScale === previousReticleScale) {
-            return;
-        }
-    console.log( previousReticleScale, newReticleScale)
-        previousReticleScale = newReticleScale;
+        var showReticle = false;
+        // every time the camera or objects change position (or every frame)
+
+        camera.updateMatrixWorld(); // make sure the camera matrix is updated
+        camera.matrixWorldInverse.getInverse( camera.matrixWorld );
+        cameraViewProjectionMatrix.multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse );
+
+        frustum.setFromMatrix( cameraViewProjectionMatrix );
         
+
+        for( var i =0, l=collisionList.length; i<l; i++) {
+
+            if( frustum.intersectsObject( collisionList[i] ) ) {
+                showReticle = true;
+                break;
+            }
+
+        }
+        reticle.visible = showReticle;
+
+
     }
 
     var detectHit = function() {
@@ -202,7 +229,9 @@ var Reticulum = (function () {
         },
         update: function (threeObject) {
             detectHit();
-            scale();
+            if(settings.proximity) {
+                proximity();
+            }
         },
         destroy: function (options) {
             //clean up

@@ -10,7 +10,7 @@ Reticulum attempts to follow Google's interactive pattern for the [display retic
 
 ### Features:
 - Reticle projects spatially onto targeted objects
-- Display the reticle only when the user approaches a target that they can activate (when in camera view)
+- Display the reticle only when the user approaches a target that they can activate
 - Avoids double vision
 - Gaze events for targeted objects `ongazeover`, `ongazeout` and `ongazelong`
 - Supports [fuse buttons](http://www.google.com/design/spec-vr/interactive-patterns/controls.html#controls-fuse-buttons) 

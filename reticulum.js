@@ -1,4 +1,4 @@
-/*! Reticulum - v1.0.4 - 2015-07-19
+/*! Reticulum - v1.0.5 - 2015-07-30
  * http://gqpbj.github.io/
  *
  * Copyright (c) 2015 Godfrey Q;
@@ -117,7 +117,13 @@ var Reticulum = (function () {
 
         for( var i =0, l=collisionList.length; i<l; i++) {
 
-            if( frustum.intersectsObject( collisionList[i] ) ) {
+            var newObj = collisionList[i];
+
+            if(!newObj.gazeable) {
+                continue;
+            }
+
+            if( frustum.intersectsObject( newObj ) ) {
                 showReticle = true;
                 break;
             }
@@ -144,36 +150,40 @@ var Reticulum = (function () {
         //Detect
         if (intersects.length) {
 
+            var newObj = intersects[ 0 ].object
+
             //Is it a new object?
-            if( INTERSECTED != intersects[ 0 ].object ) {
+            if( INTERSECTED != newObj ) {
                 //If old INTERSECTED i.e. not null reset and gazeout 
                 if ( INTERSECTED ) {
                     gazeOut(INTERSECTED);
                 };
                 
-                //Updated INTERSECTED with new object
+                //If new object is not gazeable skip it.
+                if (!newObj.gazeable) {
+                    return;
+                }
 
-                INTERSECTED = intersects[ 0 ].object;
+                //Updated INTERSECTED with new object
+                INTERSECTED = newObj;
                 //Is the object gazeable?
-                if (INTERSECTED.gazeable) {
+                //if (INTERSECTED.gazeable) {
                     //Yes
                     gazeOver(INTERSECTED);
-                }
+                //}
             } else {
                 //Ok it looks like we are in love
                 gazeLong(INTERSECTED);
             }
 
         } else {
-
-            if (INTERSECTED) {
-                //GAZE OUT
-                gazeOut(INTERSECTED);
-                if( reticle ) {
-                    //Scale reticle 
-                    positionAndReizeReticle();
+            //Is the object gazeable?
+            //if (INTERSECTED.gazeable) {
+                if (INTERSECTED) {
+                    //GAZE OUT
+                    gazeOut(INTERSECTED);
                 }
-            }
+            //}
             INTERSECTED = null;
 
         }
@@ -181,9 +191,14 @@ var Reticulum = (function () {
 
     var gazeOut = function(threeObject) {
         threeObject.hitTime = 0;
+        if( reticle ) {
+            //Scale reticle 
+            positionAndReizeReticle();
+        }
         if (threeObject.ongazeout != undefined) {
             threeObject.ongazeout();
         }
+
     };
 
     var gazeOver = function(threeObject) {

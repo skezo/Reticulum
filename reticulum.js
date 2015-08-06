@@ -1,5 +1,5 @@
-/*! Reticulum - v1.0.5 - 2015-07-30
- * http://gqpbj.github.io/
+/*! Reticulum - v1.0.6 - 2015-08-06
+ * http://gqpbj.github.io/examples/basic.html
  *
  * Copyright (c) 2015 Godfrey Q;
  * Licensed under the MIT license */
@@ -104,7 +104,7 @@ var Reticulum = (function () {
     };
     
     var proximity = function() {
-
+        var camera = settings.camera;
         var showReticle = false;
         // every time the camera or objects change position (or every frame)
 

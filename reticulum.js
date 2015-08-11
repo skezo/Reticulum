@@ -11,8 +11,7 @@ var Reticulum = (function () {
     var raycaster;
     var vector;
     var clock;
-    var reticle;
-    var newReticleScale;
+    var reticle = {};
     var settings = {};
 
     var frustum;
@@ -28,13 +27,61 @@ var Reticulum = (function () {
     settings.proximity = false;
     
     //Reticle
-    settings.reticle = {};
-    settings.reticle.far = null;
-    settings.reticle.visible = true;
-    settings.reticle.color = 0xcc0000;
-    settings.reticle.innerRadius = 0.004;
-    settings.reticle.outerRadius = 0.005;
-    settings.reticle.scale = 2;
+    reticle.initiate = function( options ) {
+        this.active         = options.reticle.active        || true;
+        this.far            = options.reticle.far           || settings.camera.far-10.0;
+        this.color          = options.reticle.color         || 0xcc0000;
+        this.innerRadius    = options.reticle.innerRadius   || 0.004;
+        this.outerRadius    = options.reticle.outerRadius   || 0.005;
+        this.scaleTo        = options.reticle.scaleTo       || 2;
+        this.scale          = 1;
+        this.size           = 0;
+        
+        //Build
+        var geometry = new THREE.RingGeometry( this.innerRadius, this.outerRadius, 32, 3, 0, Math.PI * 2 );
+        var material = new THREE.MeshBasicMaterial({
+            color: new THREE.Color( this.color ),
+            side: THREE.FrontSide
+        });
+        this.crosshair = new THREE.Mesh( geometry, material );
+        
+        //Prep size
+        this.setPosition();
+        
+        //Add to camera
+        settings.camera.add( this.crosshair );
+    };
+    
+    reticle.setPosition = function( transformZ ) {
+
+        var crosshair = this.crosshair;
+        var z = transformZ || this.far; //Default to user far setting
+
+        crosshair.position.x = 0;
+        crosshair.position.y = 0;
+        crosshair.position.z = Math.abs(z)*-1;
+
+        //If you set position you got to set the size 
+        this.setSize();
+        this.setScale();
+    };
+    
+    reticle.setSize = function() {
+        var crosshairZ = this.crosshair.position.z;
+        var cameraZ =  settings.camera.position.z;
+        //Force reticle to appear the same size
+        //http://answers.unity3d.com/questions/419342/make-gameobject-size-always-be-the-same.html
+        this.size = Math.abs( cameraZ - crosshairZ ) - Math.abs( cameraZ );
+    };
+    
+    reticle.setScale = function( ) {
+        var sizeTo = this.size * this.scale;
+        this.crosshair.scale.set( sizeTo, sizeTo, sizeTo );
+    };
+    
+    reticle.update = function( delta ) {
+        
+    };
 
     var initiate = function (camera, options) {
         //Update Settings:
@@ -42,45 +89,28 @@ var Reticulum = (function () {
             settings.camera = camera || settings.camera;
             settings.gazingDuration = options.gazingDuration || settings.gazingDuration;
             settings.proximity = options.proximity || settings.proximity;
-            settings.reticle.visible = options.reticle.visible || settings.reticle.visible;
-            settings.reticle.color = options.reticle.color || settings.reticle.color;
-            settings.reticle.innerRadius = options.reticle.innerRadius || settings.reticle.innerRadius;
-            settings.reticle.outerRadius = options.reticle.outerRadius || settings.reticle.outerRadius;
-            settings.reticle.far = options.reticle.far || settings.camera.far-10.0;
-            settings.reticle.scale = options.reticle.scale || settings.reticle.scale;
         }
-        //
+        
+        //Raycaster Setup
         raycaster = new THREE.Raycaster();
         vector = new THREE.Vector2(0, 0);
 
-        //
-        frustum = new THREE.Frustum();
-        cameraViewProjectionMatrix = new THREE.Matrix4();
-
-        //
+        //Proximity Setup
+        if( settings.proximity ) {
+            frustum = new THREE.Frustum();
+            cameraViewProjectionMatrix = new THREE.Matrix4();
+        }
+        
+        //Clock Setup
         clock = new THREE.Clock(true);
-
-        if(settings.reticle.visible) {
-            createReticle();
+        
+        //Initiate Reticle
+        if( settings.camera ) {
+            reticle.initiate(options);
         }
     };
 
-    var createReticle = function() {
-        var geometry = new THREE.RingGeometry(  settings.reticle.innerRadius, settings.reticle.outerRadius, 32, 3, 0, Math.PI * 2 );
-        var material = new THREE.MeshBasicMaterial({
-            color: new THREE.Color(settings.reticle.color),
-            side: THREE.FrontSide
-        });
-        reticle = new THREE.Mesh(geometry, material);
-        reticle.visible = settings.reticle.visible;
-
-        if(settings.camera) {
-            newReticleScale = positionAndReizeReticle();
-            settings.camera.add( reticle );
-        }
-    };
-
-    var positionAndReizeReticle = function( transformZ ) {
+    /*var positionAndReizeReticle = function( transformZ ) {
 
         var distance;
         var z = transformZ || settings.reticle.far; //Set it to its furthest viewing - this might be worth changing to a focus depth instead...
@@ -95,13 +125,13 @@ var Reticulum = (function () {
         scaleReticle( 1, distance );
 
         return distance;
-    };
+    };*/
 
-    var scaleReticle = function( scale, size ) {
+    /*var scaleReticle = function( scale, size ) {
         var scaleTo = scale || 1;
         var resize = (size || newReticleScale) * scaleTo;
         reticle.scale.set( resize, resize, resize );
-    };
+    };*/
     
     var proximity = function() {
         var camera = settings.camera;
@@ -129,10 +159,9 @@ var Reticulum = (function () {
             }
 
         }
-        reticle.visible = showReticle;
-
-
-    }
+        reticle.crosshair.visible = showReticle;
+        
+    };
 
     var detectHit = function() {
         try {
@@ -191,9 +220,11 @@ var Reticulum = (function () {
 
     var gazeOut = function(threeObject) {
         threeObject.hitTime = 0;
-        if( reticle ) {
+        if( reticle.active ) {
             //Scale reticle 
-            positionAndReizeReticle();
+            //positionAndReizeReticle();
+            reticle.scale = 1;
+            reticle.setPosition();
         }
         if (threeObject.ongazeout != undefined) {
             threeObject.ongazeout();
@@ -202,14 +233,16 @@ var Reticulum = (function () {
     };
 
     var gazeOver = function(threeObject) {
-        var objectsCore;
+        var distance;
         threeObject.hitTime = clock.getElapsedTime();
         //There has to be a better  way...
-        if( reticle ) {
-            objectsCore = settings.camera.position.distanceTo(threeObject.position);
-            objectsCore -= threeObject.geometry.boundingSphere.radius;
-            newReticleScale = positionAndReizeReticle( objectsCore );
-            scaleReticle( settings.reticle.scale );
+        if( reticle.active ) {
+            distance = settings.camera.position.distanceTo(threeObject.position);
+            distance -= threeObject.geometry.boundingSphere.radius;
+            //newReticleScale = positionAndReizeReticle( objectsCore );
+            //scaleReticle( settings.reticle.scale );
+            reticle.scale = reticle.scaleTo;
+            reticle.setPosition( distance );
         }
 
         if (threeObject.ongazeover != undefined) {
@@ -253,11 +286,12 @@ var Reticulum = (function () {
         },
         init: function (camera, options) {
             var c = camera || null;
-            if (c === null) {
-                console.log("ERROR: Camera was not defined");
+            var o = options || {};
+            if ( c === null || c.constructor != THREE.PerspectiveCamera  ) {
+                console.error("ERROR: Camera was not correctly defined. Unable to initiate Reticulum.");
                 return;
             }
-            initiate(c, options);
+            initiate(c, o);
         }
     };
 })();

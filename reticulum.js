@@ -13,7 +13,6 @@ var Reticulum = (function () {
     var clock;
     var reticle;
     var newReticleScale;
-    var previousReticleScale;
     var settings = {};
 
     var frustum;
@@ -99,9 +98,9 @@ var Reticulum = (function () {
     };
 
     var scaleReticle = function( scale, size ) {
-        var scale = scale || 1;
-        var size = (size || newReticleScale) * scale;
-        reticle.scale.set( size, size, size );
+        var scaleTo = scale || 1;
+        var resize = (size || newReticleScale) * scaleTo;
+        reticle.scale.set( resize, resize, resize );
     };
     
     var proximity = function() {

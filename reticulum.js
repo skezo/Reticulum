@@ -1,4 +1,5 @@
-/*! Reticulum - v1.0.6 - 2015-08-06
+/* global THREE */
+/*! Reticulum - v1.0.7 - 2015-08-11
  * http://gqpbj.github.io/examples/basic.html
  *
  * Copyright (c) 2015 Godfrey Q;

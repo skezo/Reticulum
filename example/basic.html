@@ -19,7 +19,7 @@
 
 <body>
 
-<script src="./js/lib/three.dev.js?abcdefghij"></script>
+<script src="./js/lib/three72dev.js?abcdefghij"></script>
 <!--script src="./js/vr/PhoneVR.js?abcdefgh"></script-->
 <script src="./js/vr/VRControls.js?abcdefghij"></script>
 <script src="./js/vr/VREffect.js?abcdefghij"></script>
@@ -116,12 +116,16 @@ Reticulum.init(camera, {
 	gazingDuration: 2.5,
 	proximity: false,
 	reticle: {
-		far: 1000, //Defines the reticle's resting point when no object has been targete
+		active: true,
+		far: 1000, //Defines the reticle's resting point when no object has been targeted
 		visible: true,
+		animate: true,
 		color: 0xcc0000,
-		innerRadius: 0.004,
-		outerRadius: 0.005,
-		scale: 2
+		innerRadius: 0.0001,
+		outerRadius: 0.003,
+		innerRadiusTo: 0.02,
+		outerRadiusTo: 0.024,
+		speed: 5
 	}
 });
 
@@ -141,7 +145,7 @@ function animate() {
 	// --- Reticulum ---
 	// keep checking if user is looking at any tracked objects
 	Reticulum.update();
-
+	
 	controls.update();
 	manager.render(scene, camera);
 

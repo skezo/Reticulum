@@ -11,7 +11,7 @@ Reticulum attempts to follow Google's interactive pattern for the [display retic
 ### Features:
 - Reticle projects spatially onto targeted objects
 - Display the reticle only when the user approaches a target that they can activate
-- Avoids double vision
+- Avoids double vision and depth issues
 - Gaze events for targeted objects `ongazeover`, `ongazeout` and `ongazelong`
 - Supports [fuse buttons](http://www.google.com/design/spec-vr/interactive-patterns/controls.html#controls-fuse-buttons) 
 - Works in the browser with Three.js 
@@ -39,11 +39,14 @@ Reticulum.init(camera, {
 	proximity: false,
 	reticle: {
 		far: 1000, //Defines the reticle's resting point when no object has been targeted
-		active: true,
+		visible: true,
 		color: 0xcc0000,
-		innerRadius: 0.004,
-		outerRadius: 0.005,
-		scale: 2
+		innerRadius: 0.0001,
+		outerRadius: 0.003,
+		innerRadiusTo: 0.02,
+		outerRadiusTo: 0.024,
+		animate: true,
+		speed: 5
 	}
 });
 ```

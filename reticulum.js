@@ -1,5 +1,5 @@
 /// <reference path="typings/threejs/three.d.ts"/>
-/*! Reticulum - v1.0.7 - 2015-08-11
+/*! Reticulum - v1.0.8 - 2015-08-13
  * http://gqpbj.github.io/examples/basic.html
  *
  * Copyright (c) 2015 Godfrey Q;

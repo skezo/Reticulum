@@ -19,21 +19,20 @@
 
 <body>
 
-<script src="./js/lib/three72dev.js?abcdefghij"></script>
-<!--script src="./js/vr/PhoneVR.js?abcdefgh"></script-->
-<script src="./js/vr/VRControls.js?abcdefghij"></script>
-<script src="./js/vr/VREffect.js?abcdefghij"></script>
+<script src="./examples/js/lib/three72dev.js"></script>
+<!--script src="./examples/js/lib/three.js"></script-->
+<script src="./examples/js/lib/VRControls.js"></script>
+<script src="./examples/js/lib/VREffect.js"></script>
 
-<script src="./js/vr/webvr-polyfill.js?abcdefghij"></script>
-<script src="./js/vr/webvr-manager.js?abcdefghij"></script>
+<script src="./examples/js/lib/webvr-polyfill.js"></script>
+<script src="./examples/js/lib/webvr-manager.js"></script>
 
 
-<script src="../reticulum.js?abcdefghijklmn"></script>
+<script src="./reticulum.js"></script>
 
 
 
 <script>
-CARDBOARD_DEBUG = false;
 // Setup three.js WebGL renderer
 var renderer = new THREE.WebGLRenderer( { antialias: true } );
 renderer.setPixelRatio( window.devicePixelRatio );
@@ -44,9 +43,7 @@ document.body.appendChild( renderer.domElement );
 var scene = new THREE.Scene();
 
 //Create a three.js camera
-//var camera = new THREE.PerspectiveCamera( 110, window.innerWidth / window.innerHeight, 2, 10000 );
-//scene.add(camera);
-var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.3, 10000);
+var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.3, 10000);
 //Apply VR headset positional data to camera.
 var controls = new THREE.VRControls( camera );
 
@@ -137,7 +134,7 @@ scene.add(camera);
 
 
 
-function animate() {
+function animate(timestamp) {
 	
 	requestAnimationFrame(animate);
 
@@ -147,7 +144,7 @@ function animate() {
 	Reticulum.update();
 	
 	controls.update();
-	manager.render(scene, camera);
+	manager.render(scene, camera, timestamp);
 
 
 	

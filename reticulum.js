@@ -1,5 +1,5 @@
 /// <reference path="typings/threejs/three.d.ts"/>
-/*! Reticulum - v1.0.8 - 2015-08-13
+/*! Reticulum - v1.0.9 - 2015-08-14
  * http://gqpbj.github.io/examples/basic.html
  *
  * Copyright (c) 2015 Godfrey Q;
@@ -62,12 +62,13 @@ var Reticulum = (function () {
         
         //Add to camera
         settings.camera.add( this.crosshair );
+        
     };
     
     //Sets the depth and scale of the reticle - reduces eyestrain and depth issues 
-    reticle.setDepthAndScale = function( transformZ ) {
+    reticle.setDepthAndScale = function( depth ) {
         var crosshair = this.crosshair;
-        var z = Math.abs(transformZ || this.far)*-1; //Default to user far setting
+        var z = Math.abs( depth || this.far ); //Default to user far setting
         var cameraZ =  settings.camera.position.z;
         //Force reticle to appear the same size - scale
         //http://answers.unity3d.com/questions/419342/make-gameobject-size-always-be-the-same.html
@@ -76,7 +77,7 @@ var Reticulum = (function () {
         //Set Depth
         crosshair.position.x = 0;
         crosshair.position.y = 0;
-        crosshair.position.z = z;
+        crosshair.position.z = THREE.Math.clampBottom( z, settings.camera.near+0.1 ) * -1;
         
         //Set Scale
         crosshair.scale.set( scale, scale, scale );
@@ -221,15 +222,7 @@ var Reticulum = (function () {
     };
 
     var gazeOver = function(threeObject) {
-        var distance;
         threeObject.hitTime = clock.getElapsedTime();
-        //There has to be a better  way...
-        if( reticle.active ) {
-            distance = settings.camera.position.distanceTo(threeObject.position);
-            distance -= threeObject.geometry.boundingSphere.radius;
-            reticle.hit = true;
-            reticle.setDepthAndScale( distance );
-        }
         //Does object have an action assigned to it?
         if (threeObject.ongazeover != undefined) {
             threeObject.ongazeover();
@@ -237,7 +230,16 @@ var Reticulum = (function () {
     };
 
     var gazeLong = function( threeObject ) {
+        var distance;
         var elapsed = clock.getElapsedTime();
+         //There has to be a better  way...
+         //Keep updating distance while user is focused on target
+        if( reticle.active ) {
+            distance = settings.camera.position.distanceTo(threeObject.position);
+            distance -= threeObject.geometry.boundingSphere.radius;
+            reticle.hit = true;
+            reticle.setDepthAndScale( distance );
+        }
         if( elapsed - threeObject.hitTime >= settings.gazingDuration ) {
             //Does object have an action assigned to it?
             if (threeObject.ongazelong != undefined) {

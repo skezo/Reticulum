@@ -100,6 +100,7 @@ scene.add(camera);
 
 - [Basic Example](http://gqpbj.github.io/Reticulum/)
 - [Proximity Example](http://gqpbj.github.io/Reticulum/examples/proximity.html)
+- [Depth Test Example](http://gqpbj.github.io/Reticulum/examples/depth.html) - hit moving targets 
 
 
 ## Acknowledgements:

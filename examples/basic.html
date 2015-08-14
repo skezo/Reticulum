@@ -19,16 +19,16 @@
 
 <body>
 
-<script src="./examples/js/lib/three72dev.js"></script>
+<script src="./js/lib/three72dev.js"></script>
 <!--script src="./examples/js/lib/three.js"></script-->
-<script src="./examples/js/lib/VRControls.js"></script>
-<script src="./examples/js/lib/VREffect.js"></script>
+<script src="./js/lib/VRControls.js"></script>
+<script src="./js/lib/VREffect.js"></script>
 
-<script src="./examples/js/lib/webvr-polyfill.js"></script>
-<script src="./examples/js/lib/webvr-manager.js"></script>
+<script src="./js/lib/webvr-polyfill.js"></script>
+<script src="./js/lib/webvr-manager.js"></script>
 
 
-<script src="./reticulum.js"></script>
+<script src="../reticulum.js"></script>
 
 
 
@@ -43,7 +43,7 @@ document.body.appendChild( renderer.domElement );
 var scene = new THREE.Scene();
 
 //Create a three.js camera
-var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.3, 10000);
+var camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.3, 10000);
 //Apply VR headset positional data to camera.
 var controls = new THREE.VRControls( camera );
 
@@ -59,15 +59,15 @@ var manager = new WebVRManager( renderer, effect, {hideButton: false} );
 var hemiLight = new THREE.HemisphereLight(0x0000ff, 0x00ff00, 0.6);
 hemiLight.position.set(0, 500, 0);
 scene.add(hemiLight);
-var boxGeometry = new THREE.BoxGeometry( 20, 20, 20 );
-var planeGeometry = new THREE.PlaneGeometry( 20, 20 );
-var sphereGeometry = new THREE.SphereGeometry( 10, 6, 1 );
+var boxGeometry = new THREE.BoxGeometry( 1, 1, 1 );
+var planeGeometry = new THREE.PlaneGeometry( 1, 1 );
+var sphereGeometry = new THREE.SphereGeometry( 2, 1, 1 );
 
 //Boxes, Planes and spheres
 for ( var i = 0; i < 750; i ++ ) {
 	addMesh(boxGeometry);
-	addMesh(planeGeometry);
-	addMesh(sphereGeometry);
+	//addMesh(planeGeometry);
+	//addMesh(sphereGeometry);
 }
 
 
@@ -75,11 +75,12 @@ for ( var i = 0; i < 750; i ++ ) {
 function addMesh(geo) {
 
 	var object = new THREE.Mesh( geo, new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
-
-	object.position.x = Math.random() * 1200 - 400;
-	object.position.y = Math.random() * 1200 - 400;
-	object.position.z = Math.random() * 1200 - 400;
-
+	
+	object.position.x = Math.random() * 20 - 10;
+	object.position.y = Math.random() * 20 - 10;
+	object.position.z = Math.random() * 20 - 10;
+	
+	object.position.z = object.position.z > -1 && object.position.z < 1 ? Math.abs(object.position.z) + 2 : object.position.z;
 	//object.rotation.y = Math.random() * 360;
 
 	

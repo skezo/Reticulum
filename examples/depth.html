@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Reticulum | Proximity Example</title>
+<title>Reticulum | Basic VR Example</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 <meta name="mobile-web-app-capable" content="yes">
@@ -30,7 +30,19 @@
 
 <script src="../reticulum.js"></script>
 
-
+<script>
+/*
+ * Debug parameters.
+ */
+// Enable distortion everywhere.
+//WEBVR_FORCE_DISTORTION = true;
+// Override the distortion background color.
+//WEBVR_BACKGROUND_COLOR = new THREE.Vector4(1, 0, 0, 1);
+// Change the tracking prediction mode.
+WEBVR_PREDICTION_MODE = 2;
+// In prediction mode, change how far into the future to predict.
+WEBVR_PREDICTION_TIME_MS = 100;
+</script>
 
 <script>
 // Setup three.js WebGL renderer
@@ -43,7 +55,7 @@ document.body.appendChild( renderer.domElement );
 var scene = new THREE.Scene();
 
 //Create a three.js camera
-var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.3, 10000);
+var camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.3, 10000);
 //Apply VR headset positional data to camera.
 var controls = new THREE.VRControls( camera );
 
@@ -59,25 +71,32 @@ var manager = new WebVRManager( renderer, effect, {hideButton: false} );
 var hemiLight = new THREE.HemisphereLight(0x0000ff, 0x00ff00, 0.6);
 hemiLight.position.set(0, 500, 0);
 scene.add(hemiLight);
-var boxGeometry = new THREE.BoxGeometry( 20, 20, 20 );
 
 //Boxes, Planes and spheres
-for ( var i = 0; i < 5; i ++ ) {
-	addMesh(boxGeometry);
+var parent = new THREE.Object3D();
+scene.add( parent );
+
+var boxCount = 10;
+var boxSize = 1;
+var radius = 10;
+var boxGeometry = new THREE.BoxGeometry( boxSize, boxSize, boxSize );
+
+
+for( var i =0; i < boxCount; i++ ) {
+	var x = 0 + radius * Math.cos(2 * Math.PI * i / boxCount);
+    var z = 0 + radius * Math.sin(2 * Math.PI * i / boxCount);  
+	addMesh(boxGeometry, x, 0, z);
 }
 
 
-
-function addMesh(geo) {
+function addMesh(geo, x, y, z) {
 
 	var object = new THREE.Mesh( geo, new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
-
-	object.position.x = Math.random() * 1200 - 400;
-	object.position.y = Math.random() * 1200 - 400;
-	object.position.z = Math.random() * 1200 - 400;
-
-	//object.rotation.y = Math.random() * 360;
-
+	
+	object.position.x = x;
+	object.position.y = y;
+	object.position.z = z;
+	
 	
 	// *******************************
 	// --- Reticulum ---
@@ -97,7 +116,7 @@ function addMesh(geo) {
 	// track the object
 	Reticulum.addCollider(object);
 
-	scene.add( object );
+	parent.add( object );
 
 }
 
@@ -107,7 +126,7 @@ function addMesh(geo) {
 // initiate Reticulum so it loads up 
 Reticulum.init(camera, {
 	gazingDuration: 2.5,
-	proximity: true,
+	proximity: false,
 	reticle: {
 		active: true,
 		far: 1000, //Defines the reticle's resting point when no object has been targeted
@@ -131,23 +150,37 @@ scene.add(camera);
 
 
 function animate(timestamp) {
-	
+	var delta = clock.getDelta();
 	requestAnimationFrame(animate);
 
 	// *******************************
 	// --- Reticulum ---
 	// keep checking if user is looking at any tracked objects
 	Reticulum.update();
-
+	
+	var elapsed = clock.getElapsedTime()*1000; //Convert into milliseconds
+	var r = oscillation(radius-1, elapsed, 15000, radius, i)
+	for( var i = 0; i < boxCount; i++  ) {
+		var x = 0 + r * Math.cos(2 * Math.PI * i / boxCount);
+    	var z = 0 + r * Math.sin(2 * Math.PI * i / boxCount);  
+		parent.children[i].position.x = x;
+		//parent.children[i].position.z = z;
+		//parent.children[i].rotation.y += 1 * delta;
+	}
+	
 	controls.update();
 	manager.render(scene, camera, timestamp);
 
 
 	
 }
+var clock = new THREE.Clock(true);
 animate();
 
-
+function oscillation( amplitude, elapsedTime, duration, start, offset ) {
+	var offset = 0.1 * (offset || 0);
+	return amplitude * Math.sin( (offset + elapsedTime) * 2 * Math.PI / duration) + start
+}
 
 /*
 Listen for keyboard events

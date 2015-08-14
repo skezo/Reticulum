@@ -30,19 +30,7 @@
 
 <script src="../reticulum.js"></script>
 
-<script>
-/*
- * Debug parameters.
- */
-// Enable distortion everywhere.
-//WEBVR_FORCE_DISTORTION = true;
-// Override the distortion background color.
-//WEBVR_BACKGROUND_COLOR = new THREE.Vector4(1, 0, 0, 1);
-// Change the tracking prediction mode.
-WEBVR_PREDICTION_MODE = 2;
-// In prediction mode, change how far into the future to predict.
-WEBVR_PREDICTION_TIME_MS = 100;
-</script>
+
 
 <script>
 // Setup three.js WebGL renderer
@@ -71,52 +59,59 @@ var manager = new WebVRManager( renderer, effect, {hideButton: false} );
 var hemiLight = new THREE.HemisphereLight(0x0000ff, 0x00ff00, 0.6);
 hemiLight.position.set(0, 500, 0);
 scene.add(hemiLight);
+var boxGeometry = new THREE.BoxGeometry( 1, 1, 1 );
+var planeGeometry = new THREE.PlaneGeometry( 0.45, 0.11 );
+var sphereGeometry = new THREE.SphereGeometry( 2, 1, 1 );
+
+
+var parent1 = new THREE.Object3D();
+parent1.position.set( 0, 0, -2.5);
+scene.add( parent1 );
+
+var parent2 = new THREE.Object3D();
+parent2.opacity = 0;
+parent2.position.set( 0, 0, -2.5);
+scene.add( parent2 );
+
 
 //Boxes, Planes and spheres
-var parent = new THREE.Object3D();
-scene.add( parent );
-
-var boxCount = 10;
-var boxSize = 1;
-var radius = 10;
-var boxGeometry = new THREE.BoxGeometry( boxSize, boxSize, boxSize );
-
-
-for( var i =0; i < boxCount; i++ ) {
-	var x = 0 + radius * Math.cos(2 * Math.PI * i / boxCount);
-    var z = 0 + radius * Math.sin(2 * Math.PI * i / boxCount);  
-	addMesh(boxGeometry, x, 0, z);
+for ( var i = 0; i < 3; i ++ ) {
+	addMesh(planeGeometry, parent1, 0xcccc00);
+	addMesh(boxGeometry, parent2, 0xcccccc );
 }
 
 
-function addMesh(geo, x, y, z) {
 
-	var object = new THREE.Mesh( geo, new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
+
+
+function addMesh(geo, group, color) {
+
+	var object = new THREE.Mesh( geo, new THREE.MeshBasicMaterial( { color: color } ) );
 	
-	object.position.x = x;
-	object.position.y = y;
-	object.position.z = z;
+	object.position.x = THREE.Math.randFloat( -4.0, 4.0 );
+	object.position.y = THREE.Math.randFloat( -1.0, 1.0 );
+	object.position.z = THREE.Math.randFloat( -1.0, 1.0 );;
 	
 	
 	// *******************************
 	// --- Reticulum ---
 	// have the object react when user looks at it
 	object.ongazeover = function(){
-		this.material.emissive.setHex( 0xffcc00 );
+		//this.material.emissive.setHex( 0xffcc00 );
 	}
 	// have the object react when user looks away from it
 	object.ongazeout = function(){
-		this.material.emissive.setHex( 0xcc0000 );
+		//this.material.emissive.setHex( 0xcc0000 );
 	}
 	// have the object react when user looks at it for a specific time
 	object.ongazelong = function(){
-		this.material.emissive.setHex( 0x0000cc );
+		//this.material.emissive.setHex( 0x0000cc );
 	}
 
 	// track the object
 	Reticulum.addCollider(object);
 
-	parent.add( object );
+	group.add( object );
 
 }
 
@@ -129,7 +124,7 @@ Reticulum.init(camera, {
 	proximity: false,
 	reticle: {
 		active: true,
-		far: 1000, //Defines the reticle's resting point when no object has been targeted
+		far: 2, //Defines the reticle's resting point when no object has been targeted
 		visible: true,
 		animate: true,
 		color: 0xcc0000,
@@ -150,7 +145,7 @@ scene.add(camera);
 
 
 function animate(timestamp) {
-	var delta = clock.getDelta();
+	
 	requestAnimationFrame(animate);
 
 	// *******************************
@@ -158,29 +153,14 @@ function animate(timestamp) {
 	// keep checking if user is looking at any tracked objects
 	Reticulum.update();
 	
-	var elapsed = clock.getElapsedTime()*1000; //Convert into milliseconds
-	var r = oscillation(radius-1, elapsed, 15000, radius, i)
-	for( var i = 0; i < boxCount; i++  ) {
-		var x = 0 + r * Math.cos(2 * Math.PI * i / boxCount);
-    	var z = 0 + r * Math.sin(2 * Math.PI * i / boxCount);  
-		parent.children[i].position.x = x;
-		parent.children[i].position.z = z;
-		parent.children[i].rotation.y += 1 * delta;
-	}
-	
 	controls.update();
 	manager.render(scene, camera, timestamp);
 
 
 	
 }
-var clock = new THREE.Clock(true);
 animate();
 
-function oscillation( amplitude, elapsedTime, duration, start, offset ) {
-	var offset = 0.1 * (offset || 0);
-	return amplitude * Math.sin( (offset + elapsedTime) * 2 * Math.PI / duration) + start
-}
 
 /*
 Listen for keyboard events

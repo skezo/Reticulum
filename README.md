@@ -98,9 +98,10 @@ scene.add(camera);
 
 ## Demos
 
-- [Basic Example](http://gqpbj.github.io/Reticulum/)
-- [Proximity Example](http://gqpbj.github.io/Reticulum/examples/proximity.html)
-- [Depth Test Example](http://gqpbj.github.io/Reticulum/examples/depth.html) - hit moving targets 
+- [Basic](http://gqpbj.github.io/Reticulum/)
+- [Proximity](http://gqpbj.github.io/Reticulum/examples/proximity.html) - only display reticle if targeted object is visible
+- [Depth Test](http://gqpbj.github.io/Reticulum/examples/depth.html) - hit moving targets 
+- [Objects in Groups](http://gqpbj.github.io/Reticulum/examples/groups.html) - hit object in group, get world values 
 
 
 ## Acknowledgements:

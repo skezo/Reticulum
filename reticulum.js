@@ -1,5 +1,5 @@
 /// <reference path="typings/threejs/three.d.ts"/>
-/*! Reticulum - v1.0.9 - 2015-08-14
+/*! Reticulum - v1.0.11 - 2015-08-14
  * http://gqpbj.github.io/examples/basic.html
  *
  * Copyright (c) 2015 Godfrey Q;
@@ -13,6 +13,7 @@ var Reticulum = (function () {
     var vector;
     var clock;
     var reticle = {};
+    
 
     var frustum;
     var cameraViewProjectionMatrix;
@@ -23,6 +24,8 @@ var Reticulum = (function () {
         gazingDuration:     2.5,
         proximity:          false
     };
+    
+    
     
     //Reticle
     reticle.initiate = function( options ) {
@@ -36,6 +39,7 @@ var Reticulum = (function () {
         this.innerRadiusTo  = options.reticle.innerRadiusTo || 0.02;
         this.outerRadiusTo  = options.reticle.outerRadiusTo || 0.024;
         this.hit            = false;
+        this.worldPosition  = new THREE.Vector3();
         //Animation options
         this.animate        = options.reticle.animate       !== false; //default to true;
         this.speed          = options.reticle.speed         || 5;
@@ -63,6 +67,8 @@ var Reticulum = (function () {
         //Add to camera
         settings.camera.add( this.crosshair );
         
+        
+        
     };
     
     //Sets the depth and scale of the reticle - reduces eyestrain and depth issues 
@@ -88,6 +94,8 @@ var Reticulum = (function () {
         if(!this.active) return;
         
         var accel = delta * this.speed;
+        
+       
         
         if( this.hit ) {
             this.moveSpeed += accel;
@@ -235,7 +243,8 @@ var Reticulum = (function () {
          //There has to be a better  way...
          //Keep updating distance while user is focused on target
         if( reticle.active ) {
-            distance = settings.camera.position.distanceTo(threeObject.position);
+            reticle.worldPosition.setFromMatrixPosition( threeObject.matrixWorld ); 
+            distance = settings.camera.position.distanceTo( reticle.worldPosition );
             distance -= threeObject.geometry.boundingSphere.radius;
             reticle.hit = true;
             reticle.setDepthAndScale( distance );

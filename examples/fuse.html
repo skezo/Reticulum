@@ -115,7 +115,11 @@ function addMesh(geo, x, y, z, i) {
 	
 	// track the object 
 	var fuse = i % 2 ? true : false;
-	Reticulum.addCollider(object, { fuse: fuse } );
+	Reticulum.addCollider(object, { 
+		fuse: fuse,
+		color: Math.random() * 0xffffff,
+		vibrate: Math.random() * 200
+	});
 
 	parent.add( object );
 
@@ -136,9 +140,12 @@ Reticulum.init(camera, {
 		color: 0xcc0000,
 		innerRadius: 0.0001,
 		outerRadius: 0.003,
-		innerRadiusTo: 0.02,
-		outerRadiusTo: 0.024,
-		speed: 5
+		hover: {
+			color: 0xcc0000,
+			innerRadiusTo: 0.02,
+			outerRadiusTo: 0.024,
+			speed: 5
+		}
 	},
 	fuse: {
 		color: 0x00fff6,

@@ -1,5 +1,5 @@
 /// <reference path="typings/threejs/three.d.ts"/>
-/*! Reticulum - v1.0.11 - 2015-08-14
+/*! Reticulum - v1.0.12 - 2015-08-17
  * http://gqpbj.github.io/examples/basic.html
  *
  * Copyright (c) 2015 Godfrey Q;
@@ -24,6 +24,9 @@ var Reticulum = (function () {
         gazingDuration:     2.5,
         proximity:          false
     };
+    
+    //Vibrate
+    var vibrate = navigator.vibrate ? navigator.vibrate.bind(navigator) : function(){};
     
     //Fuse
     fuse.initiate = function( options ) {
@@ -357,6 +360,7 @@ var Reticulum = (function () {
             fuse.over();    
         }
         threeObject.hitTime = clock.getElapsedTime();
+        vibrate(50);
         //Does object have an action assigned to it?
         if (threeObject.ongazeover != undefined) {
             threeObject.ongazeover();
@@ -383,6 +387,8 @@ var Reticulum = (function () {
         }
         
         if( gazeTime >= settings.gazingDuration ) {
+            //Vibrate
+            vibrate(200);
             //Does object have an action assigned to it?
             if (threeObject.ongazelong != undefined) {
                 threeObject.ongazelong();

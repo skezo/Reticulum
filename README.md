@@ -13,7 +13,7 @@ Reticulum attempts to follow Google's interactive pattern for the [display retic
 - Display the reticle only when the user approaches a target that they can activate
 - Avoids double vision and depth issues
 - Gaze events for targeted objects `ongazeover`, `ongazeout` and `ongazelong`
-- Supports [fuse buttons](http://www.google.com/design/spec-vr/interactive-patterns/controls.html#controls-fuse-buttons) 
+- Built in [fuse support](http://www.google.com/design/spec-vr/interactive-patterns/controls.html#controls-fuse-buttons) 
 - Works in the browser with Three.js 
 
 
@@ -47,6 +47,11 @@ Reticulum.init(camera, {
 		outerRadiusTo: 0.024,
 		animate: true,
 		speed: 5
+	},
+	fuse: {
+		color: 0x00fff6,
+		innerRadius: 0.02,
+		outerRadius: 0.024
 	}
 });
 ```
@@ -56,7 +61,7 @@ Reticulum.init(camera, {
 Add the three.js objects you want to be targeted objects
 
 ```
-Reticulum.addCollider(object);
+Reticulum.addCollider(object, { fuse: true } );
 ``` 
 
 ### 4. Define gaze events
@@ -102,6 +107,7 @@ scene.add(camera);
 - [Proximity](http://gqpbj.github.io/Reticulum/examples/proximity.html) - only display reticle if targeted object is visible
 - [Depth Test](http://gqpbj.github.io/Reticulum/examples/depth.html) - hit moving targets 
 - [Objects in Groups](http://gqpbj.github.io/Reticulum/examples/groups.html) - hit object in group, get world values 
+- [Fuse](http://gqpbj.github.io/Reticulum/examples/fuse.html) - selective objects have fuse  
 
 
 ## Acknowledgements:

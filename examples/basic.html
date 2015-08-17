@@ -100,7 +100,7 @@ function addMesh(geo) {
 	}
 
 	// track the object
-	Reticulum.addCollider(object);
+	Reticulum.addCollider(object, { fuse: true } );
 
 	scene.add( object );
 

@@ -13,7 +13,7 @@ var Reticulum = (function () {
     var vector;
     var clock;
     var reticle = {};
-    
+    var fuse = {};
 
     var frustum;
     var cameraViewProjectionMatrix;
@@ -25,24 +25,143 @@ var Reticulum = (function () {
         proximity:          false
     };
     
+    //Fuse
+    fuse.initiate = function( options ) {
+        var parameters = options || {};
+        
+        this.color          = parameters.fuse.color         || 0x00fff6;
+        this.innerRadius    = parameters.fuse.innerRadius   || reticle.innerRadiusTo;
+        this.outerRadius    = parameters.fuse.outerRadius   || reticle.outerRadiusTo;
+        this.phiSegments    = 3;
+        this.thetaSegments  = 32;
+        this.thetaStart     = Math.PI/2;
+        
+        
+        //var geometry = new THREE.CircleGeometry( reticle.outerRadiusTo, 32, Math.PI/2, 0 );
+        var geometry = new THREE.RingGeometry( this.innerRadius, this.outerRadius, this.thetaSegments, this.phiSegments, this.thetaStart, 0 );
+       
+        //Make Mesh
+        this.timer = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { 
+            color: this.color,
+            side: THREE.BackSide
+        }));
+        
+        this.timer.position.z = 0.0001; // Keep in front of reticle
+        this.timer.rotation.y = 180*(Math.PI/180); //Make it clockwise
+        
+        //Add to reticle
+        reticle.crosshair.add( this.timer );
+    };
     
+    fuse.out = function() {
+        this.active = false;
+        this.timer.visible = false;
+        this.update(0);    
+    }
+    
+    fuse.over = function() {
+        this.active = true;
+        this.update(0); 
+        this.timer.visible = true; 
+    }
+    
+    fuse.update = function(elapsed) {
+        
+        if(!this.active) return;
+        
+        //Morph
+        //var time = Date.now() * 0.001;
+        //this.ellipse.morphTargetInfluences[ 0 ] = (1 + Math.sin(4 * time)) / 2;
+
+//--CIRCLE   
+        // @radius — Radius of the circle, default = 50.
+        // @segments — Number of segments (triangles), minimum = 3, default = 8.
+        // @thetaStart — Start angle for first segment, default = 0 (three o'clock position).
+        // @thetaLength — The central angle, often called theta, of the circular sector. The default is 2*Pi, which makes for a complete circle. 
+      /*
+        var elapsed = clock.getElapsedTime()*1000; //Convert into milliseconds
+        var thetaStart = 0;
+        var thetaLength = oscillation(Math.PI, elapsed, 1000, Math.PI);
+        var vertices = this.ellipse.geometry.vertices;
+        var faces = this.ellipse.geometry.faces;
+        var fUV = this.ellipse.geometry.faceVertexUvs[ 0 ];
+        var segments = vertices.length;
+        var radius = reticle.outerRadiusTo;
+        var uvs = [];
+        var v = 0;
+        var centerUV = new THREE.Vector2( 0.5, 0.5 );
+        
+        uvs.push( centerUV );
+        
+        //Skip the first one
+        for ( v = 1; v < segments; v++ ) {
+    
+            var vertex = vertices[ v ];
+            
+            var segment = thetaStart + v / segments * thetaLength;
+            
+            vertex.x = radius * Math.cos( segment ); 
+            vertex.y = radius * Math.sin( segment ); 
+           
+    
+        }
+        this.ellipse.geometry.verticesNeedUpdate = true;
+        */
+ //--CIRCLE EOF
+
+//--RING
+        //var elapsed = clock.getElapsedTime()*1000; //Convert into milliseconds
+        //var thetaLength = oscillation(Math.PI, elapsed, settings.gazingDuration, Math.PI);
+        var gazedTime = elapsed/settings.gazingDuration; 
+        var thetaLength = gazedTime * (Math.PI*2);
+        
+        var vertices = this.timer.geometry.vertices;
+        var radius = this.innerRadius;
+        var radiusStep = ( ( this.outerRadius - this.innerRadius ) / this.phiSegments );
+        var count = 0;
+        
+        for ( var i = 0; i < this.phiSegments + 1; i ++ ) { 
+        
+            for ( var o = 0; o < this.thetaSegments + 1; o++ ) {
+            
+                var vertex = vertices[ count ];
+                var segment = this.thetaStart + o / this.thetaSegments * thetaLength;
+                vertex.x = radius * Math.cos( segment ); 
+                vertex.y = radius * Math.sin( segment ); 
+                count++;
+            }
+            radius += radiusStep;  
+        }
+        
+        this.timer.geometry.verticesNeedUpdate = true;
+        
+        //Disable fuse if reached 100%
+        if(gazedTime >= 1) {
+            this.active = false;
+        }
+//--RING EOF
+
+        
+    }
     
     //Reticle
     reticle.initiate = function( options ) {
-        this.active         = options.reticle.active        !== false; //default to true;
-        this.visible        = options.reticle.visible       !== false; //default to true;
-        this.far            = options.reticle.far           || settings.camera.far-10.0;
-        this.color          = options.reticle.color         || 0xcc0000;
-        this.colorTo        = options.reticle.colorTo       || 0xcc0000;
-        this.innerRadius    = options.reticle.innerRadius   || 0.0001;
-        this.outerRadius    = options.reticle.outerRadius   || 0.003;
-        this.innerRadiusTo  = options.reticle.innerRadiusTo || 0.02;
-        this.outerRadiusTo  = options.reticle.outerRadiusTo || 0.024;
+        var parameters = options || {};
+        
+        this.active         = parameters.reticle.active        !== false; //default to true;
+        this.visible        = parameters.reticle.visible       !== false; //default to true;
+        this.far            = parameters.reticle.far           || settings.camera.far-10.0;
+        this.color          = parameters.reticle.color         || 0xcc0000;
+        this.colorTo        = parameters.reticle.colorTo       || 0xcc0000;
+        this.innerRadius    = parameters.reticle.innerRadius   || 0.0001;
+        this.outerRadius    = parameters.reticle.outerRadius   || 0.003;
+        this.innerRadiusTo  = parameters.reticle.innerRadiusTo || 0.02;
+        this.outerRadiusTo  = parameters.reticle.outerRadiusTo || 0.024;
         this.hit            = false;
         this.worldPosition  = new THREE.Vector3();
         //Animation options
-        this.animate        = options.reticle.animate       !== false; //default to true;
-        this.speed          = options.reticle.speed         || 5;
+        this.animate        = parameters.reticle.animate       !== false; //default to true;
+        this.speed          = parameters.reticle.speed         || 5;
         this.moveSpeed      = 0;
         
         //If not active
@@ -66,8 +185,6 @@ var Reticulum = (function () {
         
         //Add to camera
         settings.camera.add( this.crosshair );
-        
-        
         
     };
     
@@ -95,8 +212,6 @@ var Reticulum = (function () {
         
         var accel = delta * this.speed;
         
-       
-        
         if( this.hit ) {
             this.moveSpeed += accel;
             this.moveSpeed = Math.min(this.moveSpeed, 1);
@@ -114,6 +229,8 @@ var Reticulum = (function () {
             settings.camera = camera; //required
             settings.gazingDuration = options.gazingDuration || settings.gazingDuration;
             settings.proximity = options.proximity || settings.proximity;
+            options.reticle = options.reticle || {};
+            options.fuse = options.fuse || {};
         }
         
         //Raycaster Setup
@@ -131,6 +248,9 @@ var Reticulum = (function () {
         
         //Initiate Reticle
         reticle.initiate(options);
+        
+        //Initiate Fuse
+        fuse.initiate(options);
     };
     
     var proximity = function() {
@@ -220,6 +340,9 @@ var Reticulum = (function () {
 
     var gazeOut = function(threeObject) {
         threeObject.hitTime = 0;
+        if(threeObject.fuse) {
+            fuse.out();    
+        }
         if ( reticle.active ) {
             reticle.hit = false;
             reticle.setDepthAndScale();
@@ -230,6 +353,9 @@ var Reticulum = (function () {
     };
 
     var gazeOver = function(threeObject) {
+        if(threeObject.fuse) {
+            fuse.over();    
+        }
         threeObject.hitTime = clock.getElapsedTime();
         //Does object have an action assigned to it?
         if (threeObject.ongazeover != undefined) {
@@ -240,6 +366,7 @@ var Reticulum = (function () {
     var gazeLong = function( threeObject ) {
         var distance;
         var elapsed = clock.getElapsedTime();
+        var gazeTime = elapsed - threeObject.hitTime;
          //There has to be a better  way...
          //Keep updating distance while user is focused on target
         if( reticle.active ) {
@@ -249,7 +376,13 @@ var Reticulum = (function () {
             reticle.hit = true;
             reticle.setDepthAndScale( distance );
         }
-        if( elapsed - threeObject.hitTime >= settings.gazingDuration ) {
+        
+        //Fuse
+        if(threeObject.fuse) {
+            fuse.update(gazeTime);    
+        }
+        
+        if( gazeTime >= settings.gazingDuration ) {
             //Does object have an action assigned to it?
             if (threeObject.ongazelong != undefined) {
                 threeObject.ongazelong();
@@ -261,8 +394,11 @@ var Reticulum = (function () {
 
     
     return {
-        addCollider: function (threeObject) {
+        addCollider: function (threeObject, options) {
+            var parameters = options || {};
+            threeObject.fuse = parameters.fuse !== false; //default to true;
             threeObject.gazeable = true;
+            
             collisionList.push(threeObject);
         },
         removeCollider: function (threeObject) {

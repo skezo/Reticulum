@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Reticulum | Depth VR Example</title>
+<title>Reticulum | Fuse VR Example</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 <meta name="mobile-web-app-capable" content="yes">
@@ -85,11 +85,11 @@ var boxGeometry = new THREE.BoxGeometry( boxSize, boxSize, boxSize );
 for( var i =0; i < boxCount; i++ ) {
 	var x = 0 + radius * Math.cos(2 * Math.PI * i / boxCount);
     var z = 0 + radius * Math.sin(2 * Math.PI * i / boxCount);  
-	addMesh(boxGeometry, x, 0, z);
+	addMesh(boxGeometry, x, 0, z, i);
 }
 
 
-function addMesh(geo, x, y, z) {
+function addMesh(geo, x, y, z, i) {
 
 	var object = new THREE.Mesh( geo, new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
 	
@@ -112,9 +112,10 @@ function addMesh(geo, x, y, z) {
 	object.ongazelong = function(){
 		this.material.emissive.setHex( 0x0000cc );
 	}
-
-	// track the object
-	Reticulum.addCollider(object);
+	
+	// track the object 
+	var fuse = i % 2 ? true : false;
+	Reticulum.addCollider(object, { fuse: fuse } );
 
 	parent.add( object );
 
@@ -138,6 +139,11 @@ Reticulum.init(camera, {
 		innerRadiusTo: 0.02,
 		outerRadiusTo: 0.024,
 		speed: 5
+	},
+	fuse: {
+		color: 0x00fff6,
+		innerRadius: 0.045,
+		outerRadius: 0.06
 	}
 });
 
@@ -158,16 +164,6 @@ function animate(timestamp) {
 	// keep checking if user is looking at any tracked objects
 	Reticulum.update();
 	
-	var elapsed = clock.getElapsedTime()*1000; //Convert into milliseconds
-	var r = oscillation(radius-1, elapsed, 15000, radius, i)
-	for( var i = 0; i < boxCount; i++  ) {
-		var x = 0 + r * Math.cos(2 * Math.PI * i / boxCount);
-    	var z = 0 + r * Math.sin(2 * Math.PI * i / boxCount);  
-		parent.children[i].position.x = x;
-		parent.children[i].position.z = z;
-		parent.children[i].rotation.y += 1 * delta;
-	}
-	
 	controls.update();
 	manager.render(scene, camera, timestamp);
 
@@ -176,11 +172,6 @@ function animate(timestamp) {
 }
 var clock = new THREE.Clock(true);
 animate();
-
-function oscillation( amplitude, elapsedTime, duration, start, offset ) {
-	var offset = 0.1 * (offset || 0);
-	return amplitude * Math.sin( (offset + elapsedTime) * 2 * Math.PI / duration) + start
-}
 
 /*
 Listen for keyboard events

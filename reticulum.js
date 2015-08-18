@@ -47,7 +47,8 @@ var Reticulum = (function () {
         //Make Mesh
         this.mesh = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { 
             color: this.color,
-            side: THREE.BackSide
+            side: THREE.BackSide,
+            fog: false
         }));
         
         //Set mesh visibility
@@ -142,7 +143,8 @@ var Reticulum = (function () {
         //Make Mesh
         this.mesh = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { 
             color: this.color,
-            morphTargets: true
+            morphTargets: true,
+            fog: false
         }));
         this.mesh.visible = this.visible;
         

@@ -35,23 +35,28 @@ Call the Reticulum initializer function and set your options.
 
 ```javascript
 Reticulum.init(camera, {
-	gazingDuration: 2.5,
 	proximity: false,
 	reticle: {
-		far: 1000, //Defines the reticle's resting point when no object has been targeted
 		visible: true,
+		far: 1000, //Defines the reticle's resting point when no object has been targeted
 		color: 0xcc0000,
 		innerRadius: 0.0001,
 		outerRadius: 0.003,
-		innerRadiusTo: 0.02,
-		outerRadiusTo: 0.024,
-		animate: true,
-		speed: 5
+		hover: {
+			color: 0xcc0000,
+			innerRadius: 0.02,
+			outerRadius: 0.024,
+			speed: 5,
+			vibrate: 50 //Set to 0 or [] to disable
+		}
 	},
 	fuse: {
+		visible: true,
+		duration: 2.5,
 		color: 0x00fff6,
-		innerRadius: 0.02,
-		outerRadius: 0.024
+		innerRadius: 0.045,
+		outerRadius: 0.06,
+		vibrate: 100 //Set to 0 or [] to disable
 	}
 });
 ```
@@ -61,7 +66,7 @@ Reticulum.init(camera, {
 Add the three.js objects you want to be targeted objects
 
 ```
-Reticulum.addCollider(object, { fuse: true } );
+Reticulum.addCollider( object );
 ``` 
 
 ### 4. Define gaze events

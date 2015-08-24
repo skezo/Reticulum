@@ -178,6 +178,7 @@ function animate(timestamp) {
 	}
 	
 	controls.update();
+	camera.updateMatrixWorld(); // Required to stop ghosting - must be placed before render update
 	manager.render(scene, camera, timestamp);
 
 

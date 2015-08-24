@@ -115,7 +115,7 @@ scene.add(camera);
 - [Fuse](http://gqpbj.github.io/Reticulum/examples/fuse.html) - selective objects have fuse  
 
 ## Known Issues
-- Ghosting occurs to the reticle and fuse when in VR mode. More details on the issue can found [here](https://github.com/mrdoob/three.js/issues/7041). A quick workaround to this issue is adding a second `effect.render(scene, camera);` to the callback of the `requestAnimationFrame()` method. 
+- Ghosting occurs to the reticle and fuse when in VR mode. More details on the issue can found [here](https://github.com/mrdoob/three.js/issues/7041). **A quick workaround** to this issue is adding `camera.updateMatrixWorld();` before the render call (e.g. `manager.render(scene, camera, timestamp);` to the callback function of the `requestAnimationFrame()` method. 
 
 
 ## Acknowledgements:

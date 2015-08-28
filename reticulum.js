@@ -123,6 +123,7 @@ var Reticulum = (function () {
         this.innerRadius        = parameters.innerRadius        || 0.0001;
         this.outerRadius        = parameters.outerRadius        || 0.003;
         this.worldPosition      = new THREE.Vector3();
+        this.ignoreInvisible    = parameters.ignoreInvisible    !== false; //default to true;
         //Hover
         this.innerRadiusTo      = parameters.hover.innerRadius  || 0.02;
         this.outerRadiusTo      = parameters.hover.outerRadius  || 0.024;
@@ -240,6 +241,10 @@ var Reticulum = (function () {
             if(!newObj.gazeable) {
                 continue;
             }
+            
+            if( reticle.ignoreInvisible && !newObj.visible) {
+                continue;
+            }
 
             if( frustum.intersectsObject( newObj ) ) {
                 showReticle = true;
@@ -263,10 +268,26 @@ var Reticulum = (function () {
 
         //
         var intersects = raycaster.intersectObjects(collisionList);
+        var intersectsCount = intersects.length;
         //Detect
-        if (intersects.length) {
+        if (intersectsCount) {
 
-            var newObj = intersects[ 0 ].object
+            var newObj;
+            
+            //Check if what we are hitting can be used
+            for( var i =0, l=intersectsCount; i<l; i++) {
+                newObj = intersects[ i ].object;
+                //If new object is not gazeable skip it.
+                if (!newObj.gazeable) {
+                    continue;
+                }
+                //If new object is invisible skip it.
+                if( reticle.ignoreInvisible && !newObj.visible) {
+                    continue;
+                }
+                //No issues let use this one
+                break;
+            }
 
             //Is it a new object?
             if( INTERSECTED != newObj ) {
@@ -274,11 +295,6 @@ var Reticulum = (function () {
                 if ( INTERSECTED ) {
                     gazeOut(INTERSECTED);
                 };
-                
-                //If new object is not gazeable skip it.
-                if (!newObj.gazeable) {
-                    return;
-                }
 
                 //Updated INTERSECTED with new object
                 INTERSECTED = newObj;

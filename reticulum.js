@@ -24,6 +24,13 @@ var Reticulum = (function () {
         proximity:          false
     };
     
+    //Utilities
+    var utilities = {
+        clampBottom: function ( x, a ) {
+            return x < a ? a : x;
+        }
+    } 
+    
     //Vibrate
     var vibrate = navigator.vibrate ? navigator.vibrate.bind(navigator) : function(){};
     
@@ -169,7 +176,7 @@ var Reticulum = (function () {
         //Set Depth
         crosshair.position.x = 0;
         crosshair.position.y = 0;
-        crosshair.position.z = THREE.Math.clampBottom( z, settings.camera.near+0.1 ) * -1;
+        crosshair.position.z = utilities.clampBottom( z, settings.camera.near+0.1 ) * -1;
         
         //Set Scale
         crosshair.scale.set( scale, scale, scale );

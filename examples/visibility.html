@@ -60,9 +60,10 @@ var manager = new WebVRManager( renderer, effect, {hideButton: false} );
 // initiate Reticulum so it loads up 
 Reticulum.init(camera, {
 	proximity: false,
+	clickevents: true,
 	reticle: {
 		visible: true,
-		far: 1000, //Defines the reticle's resting point when no object has been targeted
+		restPoint: 1000, //Defines the reticle's resting point when no object has been targeted
 		color: 0xcc0000,
 		innerRadius: 0.0001,
 		outerRadius: 0.003,
@@ -102,13 +103,16 @@ var behindColor = Math.random() * 0xffffff;
 var front = new THREE.Mesh( boxGeometry, new THREE.MeshLambertMaterial( { color: frontColor } ) );
 front.position.set( 0.5, 0, -5 );
 front.visible = false;
-Reticulum.addCollider( front );
-front.ongazeover = function(){
-	this.material.emissive.setHex( 0xffcc00 );
-}
-front.ongazeout = function(){
-	this.material.emissive.setHex( frontColor );
-}
+Reticulum.add( front, {
+	onGazeOver: function(){
+		// do something when user targets object
+		this.material.emissive.setHex( 0xffcc00 );
+	},
+	onGazeOut: function(){
+		// do something when user moves reticle off targeted object
+		this.material.emissive.setHex( frontColor );
+	}
+});
 scene.add( front );
 //Toggle Visiblity of Front Cube
 window.setInterval( function(){ front.visible = !front.visible }, 3000 )
@@ -117,13 +121,17 @@ window.setInterval( function(){ front.visible = !front.visible }, 3000 )
 var behind = new THREE.Mesh( boxGeometry, new THREE.MeshLambertMaterial( { color: behindColor } ) );
 behind.position.set( 0, 0, -10 );
 behind.visible = true;
-Reticulum.addCollider( behind );
-behind.ongazeover = function(){
-	this.material.emissive.setHex( 0xffcc00 );
-}
-behind.ongazeout = function(){
-	this.material.emissive.setHex( behindColor );
-}
+Reticulum.add( behind, {
+	onGazeOver: function(){
+		// do something when user targets object
+		this.material.emissive.setHex( 0xffcc00 );
+	},
+	onGazeOut: function(){
+		// do something when user moves reticle off targeted object
+		this.material.emissive.setHex( behindColor );
+	}
+});
+
 scene.add( behind );
 
 

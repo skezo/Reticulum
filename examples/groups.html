@@ -96,20 +96,25 @@ function addMesh(geo, group, color) {
 	// *******************************
 	// --- Reticulum ---
 	// have the object react when user looks at it
-	object.ongazeover = function(){
-		//this.material.emissive.setHex( 0xffcc00 );
-	}
-	// have the object react when user looks away from it
-	object.ongazeout = function(){
-		//this.material.emissive.setHex( 0xcc0000 );
-	}
-	// have the object react when user looks at it for a specific time
-	object.ongazelong = function(){
-		//this.material.emissive.setHex( 0x0000cc );
-	}
-
 	// track the object
-	Reticulum.addCollider(object);
+	Reticulum.add( object, {
+		onGazeOver: function(){
+			// do something when user targets object
+			//this.material.emissive.setHex( 0xffcc00 );
+		},
+		onGazeOut: function(){
+			// do something when user moves reticle off targeted object
+			//this.material.emissive.setHex( 0xcc0000 );
+		},
+		onGazeLong: function(){
+			// do something user targetes object for specific time
+			//this.material.emissive.setHex( 0x0000cc );
+		},
+		onGazeClick: function(){
+			// have the object react when user clicks / taps on targeted object
+			//this.material.emissive.setHex( 0x00cccc * Math.random() );
+		}
+	});
 
 	group.add( object );
 
@@ -121,9 +126,10 @@ function addMesh(geo, group, color) {
 // initiate Reticulum so it loads up 
 Reticulum.init(camera, {
 	proximity: false,
+	clickevents: true,
 	reticle: {
 		visible: true,
-		far: 2, //Defines the reticle's resting point when no object has been targeted
+		restPoint: 1000, //Defines the reticle's resting point when no object has been targeted
 		color: 0xcc0000,
 		innerRadius: 0.0001,
 		outerRadius: 0.003,

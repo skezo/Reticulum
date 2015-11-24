@@ -9,12 +9,12 @@ Reticulum attempts to follow Google's interactive pattern for the [display retic
 
 
 ### Features:
-- Reticle projects spatially onto targeted objects
-- Display the reticle only when the user approaches a target that they can activate
-- Avoids double vision and depth issues
-- Gaze events for targeted objects `ongazeover`, `ongazeout` and `ongazelong`
-- Built in [fuse support](http://www.google.com/design/spec-vr/interactive-patterns/controls.html#controls-fuse-buttons) 
-- Works in the browser with Three.js 
+- Avoids double vision and depth issues by projecting spatially onto targeted objects
+- Gaze and click events for targeted objects `onGazeOver`, `onGazeOut`, `onGazeLong` and `onGazeClick`
+- Set different fuze durations for targeted objects
+- Built in [fuse support](http://www.google.com/design/spec-vr/interactive-patterns/controls.html#controls-fuse-buttons)
+- Display the reticle only when the camera can see a targeted object 
+- Works in the browser with Three.js (r73)
 
 
 ### 1. Getting Started
@@ -29,20 +29,20 @@ Load Three.js and include the Reticulum.js file. You might also want to use the 
 
 ### 2. Initiate and set options
 
-Call the Reticulum initializer function and set your options.
+Call the Reticulum initializer function and set your options. Options can be set globally or per targeted object. 
 
 **Note:** You must define the `camera`... it is required. 
 
 ```javascript
 Reticulum.init(camera, {
 	proximity: false,
+	clickevents: true,
 	reticle: {
 		visible: true,
-		far: 1000, //Defines the reticle's resting point when no object has been targeted
+		restPoint: 1000, //Defines the reticle's resting point when no object has been targeted
 		color: 0xcc0000,
 		innerRadius: 0.0001,
 		outerRadius: 0.003,
-		ignoreInvisible: true,
 		hover: {
 			color: 0xcc0000,
 			innerRadius: 0.02,
@@ -62,48 +62,58 @@ Reticulum.init(camera, {
 });
 ```
 
-### 3. Define targeted objects
+### 3. Define targeted objects and options
 
-Add the three.js objects you want to be targeted objects
-
-```
-Reticulum.addCollider( object );
-``` 
-
-### 4. Define gaze events
+Add the three.js objects you want to be targeted objects. Override global options by setting local ones.
 
 ```javascript
-object.ongazeover = function(){
-	// have the object react when user looks at it
-	this.material.emissive.setHex( 0xffcc00 );
-}
 
-object.ongazeout = function(){
-	// have the object react when user looks away from it
-	this.material.emissive.setHex( 0xcc0000 );
-}
+Reticulum.add( object, {
+	reticleHoverColor: 0x00fff6, // Overrides global fuse color
+	fuseVisible: true, // Overrides global fuse visibility
+	fuseDuration: 1.5, // Overrides global fuse duration
+	fuseColor: 0xcc0000, // Overrides global fuse color
+	onGazeOver: function(){
+		// do something when user targets object
+		this.material.emissive.setHex( 0xffcc00 );
+	},
+	onGazeOut: function(){
+		// do something when user moves reticle off targeted object
+		this.material.emissive.setHex( 0xcc0000 );
+	},
+	onGazeLong: function(){
+		// do something user targetes object for specific time
+		this.material.emissive.setHex( 0x0000cc );
+	},
+	onGazeClick: function(){
+		// have the object react when user clicks / taps on targeted object
+		this.material.emissive.setHex( 0x0000cc );
+	}
+});
+``` 
 
-object.ongazelong = function(){
-	// have the object react when user looks at it for a specific time
-	this.material.emissive.setHex( 0x0000cc );
-}
+You can also remove targeted objects.
+```javascript
+Reticulum.remove( object );
 ```
 
 
-### 5. Add to animation loop
+### 4. Add to animation loop
 
 Add Reticulum to your animation loop 
 
-```
+```javascript
 Reticulum.update()
 ```
 
 
-### 6. Add Camera to scene
+### 5. Add Camera to scene
 
 If you require to display the reticle you will need to add the `camera` to the `scene`. 
 
-```
+**Note:** See Known Issues below if ghosting occurs. 
+
+```javascript
 scene.add(camera);
 ```
 

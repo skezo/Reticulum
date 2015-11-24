@@ -1,5 +1,5 @@
 /// <reference path="typings/threejs/three.d.ts"/>
-/*! Reticulum - v1.0.12 - 2015-08-17
+/*! Reticulum - v2.0.0 - 2015-11-24
  * http://gqpbj.github.io/examples/basic.html
  *
  * Copyright (c) 2015 Godfrey Q;
@@ -21,7 +21,8 @@ var Reticulum = (function () {
     //Settings from user
     var settings = {
         camera:             null, //Required
-        proximity:          false
+        proximity:          false,
+        isClickEnabled:     true
     };
     
     //Utilities
@@ -39,7 +40,7 @@ var Reticulum = (function () {
         var parameters = options || {};
         
         this.visible        = parameters.visible       !== false; //default to true;
-        this.duration       = parameters.duration      || 2.5;
+        this.globalDuration = parameters.duration      || 2.5;
         this.vibratePattern = parameters.vibrate       || 100;
         this.color          = parameters.color         || 0x00fff6;
         this.innerRadius    = parameters.innerRadius   || reticle.innerRadiusTo;
@@ -47,6 +48,7 @@ var Reticulum = (function () {
         this.phiSegments    = 3;
         this.thetaSegments  = 32;
         this.thetaStart     = Math.PI/2;
+        this.duration       = this.globalDuration;
         
         //var geometry = new THREE.CircleGeometry( reticle.outerRadiusTo, 32, Math.PI/2, 0 );
         var geometry = new THREE.RingGeometry( this.innerRadius, this.outerRadius, this.thetaSegments, this.phiSegments, this.thetaStart, 0 );
@@ -76,10 +78,11 @@ var Reticulum = (function () {
         this.update(0);   
     }
     
-    fuse.over = function() {
+    fuse.over = function(duration, visible) {
+        this.duration = duration || this.globalDuration;
         this.active = true;
         this.update(0); 
-        this.mesh.visible = this.visible;
+        this.mesh.visible = visible || this.visible;
     }
     
     fuse.update = function(elapsed) {
@@ -125,8 +128,8 @@ var Reticulum = (function () {
         
         this.active             = true;
         this.visible            = parameters.visible            !== false; //default to true;
-        this.far                = parameters.far                || settings.camera.far-10.0;
-        this.color              = parameters.color              || 0xcc0000;
+        this.restPoint          = parameters.restPoint          || settings.camera.far-10.0;
+        this.globalColor        = parameters.color              || 0xcc0000;
         this.innerRadius        = parameters.innerRadius        || 0.0001;
         this.outerRadius        = parameters.outerRadius        || 0.003;
         this.worldPosition      = new THREE.Vector3();
@@ -134,12 +137,18 @@ var Reticulum = (function () {
         //Hover
         this.innerRadiusTo      = parameters.hover.innerRadius  || 0.02;
         this.outerRadiusTo      = parameters.hover.outerRadius  || 0.024;
-        this.colorTo            = parameters.hover.color        || this.color;
+        this.globalColorTo      = parameters.hover.color        || this.color;
         this.vibratePattern     = parameters.hover.vibrate      || 50;
-        this.hit                = false;
+        this.hit                = false; 
         //Animation options
         this.speed              = parameters.hover.speed        || 5;
         this.moveSpeed          = 0;
+        
+        //Colors
+        this.globalColor = new THREE.Color( this.globalColor );
+        this.color = this.globalColor.clone();
+        this.globalColorTo = new THREE.Color( this.globalColorTo );
+        this.colorTo = this.globalColorTo.clone();
         
         //Geometry
         var geometry = new THREE.RingGeometry( this.innerRadius, this.outerRadius, 32, 3, 0, Math.PI * 2 );
@@ -167,7 +176,7 @@ var Reticulum = (function () {
     //Sets the depth and scale of the reticle - reduces eyestrain and depth issues 
     reticle.setDepthAndScale = function( depth ) {
         var crosshair = this.mesh;
-        var z = Math.abs( depth || this.far ); //Default to user far setting
+        var z = Math.abs( depth || this.restPoint ); //Default to user far setting
         var cameraZ =  settings.camera.position.z;
         //Force reticle to appear the same size - scale
         //http://answers.unity3d.com/questions/419342/make-gameobject-size-always-be-the-same.html
@@ -197,6 +206,10 @@ var Reticulum = (function () {
         }
         //Morph
         this.mesh.morphTargetInfluences[ 0 ] = this.moveSpeed;
+        //Set Color
+        this.color = this.globalColor.clone();
+        //console.log( this.color.lerp( this.colorTo, this.moveSpeed ) )
+        this.mesh.material.color = this.color.lerp( this.colorTo, this.moveSpeed );
     };
 
     var initiate = function (camera, options) {
@@ -204,6 +217,7 @@ var Reticulum = (function () {
         if (options) {
             settings.camera = camera; //required
             settings.proximity = options.proximity || settings.proximity;
+            settings.isClickEnabled = options.clickevents || settings.isClickEnabled;
             options.reticle = options.reticle || {};
             options.fuse = options.fuse || {};
         }
@@ -216,6 +230,12 @@ var Reticulum = (function () {
         if( settings.proximity ) {
             frustum = new THREE.Frustum();
             cameraViewProjectionMatrix = new THREE.Matrix4();
+        }
+        
+        //Enable Click / Tap Events
+        if( settings.isClickEnabled ) {
+            document.body.addEventListener('touchend', touchClickHandler, false);
+            document.body.addEventListener('click', touchClickHandler, false);
         }
         
         //Clock Setup
@@ -245,7 +265,7 @@ var Reticulum = (function () {
 
             var newObj = collisionList[i];
 
-            if(!newObj.gazeable) {
+            if(!newObj.reticulumData.gazeable) {
                 continue;
             }
             
@@ -285,7 +305,7 @@ var Reticulum = (function () {
             for( var i =0, l=intersectsCount; i<l; i++) {
                 newObj = intersects[ i ].object;
                 //If new object is not gazeable skip it.
-                if (!newObj.gazeable) {
+                if (!newObj.reticulumData.gazeable) {
                     continue;
                 }
                 //If new object is invisible skip it.
@@ -333,42 +353,44 @@ var Reticulum = (function () {
     };
 
     var gazeOut = function(threeObject) {
-        threeObject.hitTime = 0;
+        threeObject.userData.hitTime = 0;
         //if(threeObject.fuse) {
             fuse.out();    
         //}
         
-        //Change Color
-        setColor(reticle.mesh, reticle.color);
-        //
         reticle.hit = false;
         reticle.setDepthAndScale();
         
-        if ( threeObject.ongazeout != undefined ) {
-            threeObject.ongazeout();
+        if ( threeObject.onGazeOut != null ) {
+            threeObject.onGazeOut();
         }
     };
 
     var gazeOver = function(threeObject) {
+        var threeObjectData = threeObject.reticulumData;
+        reticle.colorTo = threeObjectData.reticleHoverColor || reticle.globalColorTo;
         
-        //if(threeObject.fuse) {
-            fuse.over();    
-        //}
-        threeObject.hitTime = clock.getElapsedTime();
-        //Change Color
-        setColor(reticle.mesh, reticle.colorTo);
+        //Fuse
+        fuse.over(threeObjectData.fuseDuration, threeObjectData.fuseVisible);
+        if(threeObjectData.fuseColor) {
+          setColor(fuse.mesh, threeObjectData.fuseColor);    
+        }
+        
+        threeObject.userData.hitTime = clock.getElapsedTime();
+        
+        //Reticle
         //Vibrate
         vibrate( reticle.vibratePattern );
         //Does object have an action assigned to it?
-        if (threeObject.ongazeover != undefined) {
-            threeObject.ongazeover();
+        if (threeObject.onGazeOver != null) {
+            threeObject.onGazeOver();
         }
     };
 
     var gazeLong = function( threeObject ) {
         var distance;
         var elapsed = clock.getElapsedTime();
-        var gazeTime = elapsed - threeObject.hitTime;
+        var gazeTime = elapsed - threeObject.userData.hitTime;
          //There has to be a better  way...
          //Keep updating distance while user is focused on target
         if( reticle.active ) {
@@ -384,32 +406,64 @@ var Reticulum = (function () {
             //Vibrate
             vibrate( fuse.vibratePattern );
             //Does object have an action assigned to it?
-            if (threeObject.ongazelong != undefined) {
-                threeObject.ongazelong();
+            if (threeObject.onGazeLong != null) {
+                threeObject.onGazeLong();
             }
             //Reset the clock
-            threeObject.hitTime = elapsed;
+            threeObject.userData.hitTime = elapsed;
         } else {
             fuse.update(gazeTime); 
         }
     };
-
+    
+    var gazeClick = function( threeObject ) {
+        //Reset the clock
+        threeObject.userData.hitTime = clock.getElapsedTime();
+        //Force gaze to end...this might be to assumptions
+        fuse.update( fuse.duration );
+        //Vibrate
+        vibrate( fuse.vibratePattern );
+        //Does object have an action assigned to it?
+        if (threeObject.onGazeClick != null) {
+            threeObject.onGazeClick();
+        }
+    };
+    
+    //This function is called on click or touch events
+    var touchClickHandler = function(e) {
+        if( reticle.hit && INTERSECTED ) {
+            e.preventDefault();
+            gazeClick(INTERSECTED);
+        }
+    }
+    
     
     return {
-        addCollider: function (threeObject, options) {
+        add: function (threeObject, options) {
             var parameters = options || {};
-            threeObject.gazeable = true;
-            //threeObject.fuse = true;
-            /*threeObject.fuse = parameters.fuse !== false, //default to true;
-            threeObject.reticle = {
-                hover: {
-                   vibrate: parameters.hover.vibrate || null,
-                   color: parameters.hover.color || null
-                }
-            }*/
+            
+            //Stores object options for reticulum
+            threeObject.reticulumData                           = {};
+            threeObject.reticulumData.gazeable                  = true;
+            //Reticle
+            threeObject.reticulumData.reticleHoverColor = null;
+            if(parameters.reticleHoverColor) {
+                threeObject.reticulumData.reticleHoverColor = new THREE.Color(parameters.reticleHoverColor);
+            }
+            //Fuse
+            threeObject.reticulumData.fuseVisible               = parameters.fuseVisible            || null;
+            threeObject.reticulumData.fuseDuration              = parameters.fuseDuration           || null;
+            threeObject.reticulumData.fuseColor                 = parameters.fuseColor              || null;
+            //Events
+            threeObject.onGazeOver                              = parameters.onGazeOver             || null;
+            threeObject.onGazeOut                               = parameters.onGazeOut              || null;
+            threeObject.onGazeLong                              = parameters.onGazeLong             || null;
+            threeObject.onGazeClick                             = parameters.onGazeClick            || null;
+            
+            //Add object to list
             collisionList.push(threeObject);
         },
-        removeCollider: function (threeObject) {
+        remove: function (threeObject) {
             var index = collisionList.indexOf(threeObject);
             threeObject.gazeable = false;
             if (index > -1) {

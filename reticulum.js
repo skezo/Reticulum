@@ -1,5 +1,5 @@
 /// <reference path="typings/threejs/three.d.ts"/>
-/*! Reticulum - v2.0.0 - 2015-11-24
+/*! Reticulum - v2.0.1 - 2015-11-25
  * http://gqpbj.github.io/examples/basic.html
  *
  * Copyright (c) 2015 Godfrey Q;
@@ -40,11 +40,11 @@ var Reticulum = (function () {
         var parameters = options || {};
         
         this.visible        = parameters.visible       !== false; //default to true;
-        this.globalDuration = parameters.duration      || 2.5;
-        this.vibratePattern = parameters.vibrate       || 100;
-        this.color          = parameters.color         || 0x00fff6;
-        this.innerRadius    = parameters.innerRadius   || reticle.innerRadiusTo;
-        this.outerRadius    = parameters.outerRadius   || reticle.outerRadiusTo;
+        this.globalDuration = parameters.duration      ||  2.5;
+        this.vibratePattern = parameters.vibrate       ||  100;
+        this.color          = parameters.color         ||  0x00fff6;
+        this.innerRadius    = parameters.innerRadius   ||  reticle.innerRadiusTo;
+        this.outerRadius    = parameters.outerRadius   ||  reticle.outerRadiusTo;
         this.phiSegments    = 3;
         this.thetaSegments  = 32;
         this.thetaStart     = Math.PI/2;

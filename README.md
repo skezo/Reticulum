@@ -57,7 +57,8 @@ Reticulum.init(camera, {
 		color: 0x00fff6,
 		innerRadius: 0.045,
 		outerRadius: 0.06,
-		vibrate: 100 //Set to 0 or [] to disable
+		vibrate: 100, //Set to 0 or [] to disable
+		clickCancelFuse: false //If users clicks on targeted object fuse is canceled
 	}
 });
 ```
@@ -69,7 +70,8 @@ Add the three.js objects you want to be targeted objects. Override global option
 ```javascript
 
 Reticulum.add( object, {
-	reticleHoverColor: 0x00fff6, // Overrides global fuse color
+	clickCancelFuse: true, // Overrides global setting for fuse's clickCancelFuse
+	reticleHoverColor: 0x00fff6, // Overrides global reticle hover color
 	fuseVisible: true, // Overrides global fuse visibility
 	fuseDuration: 1.5, // Overrides global fuse duration
 	fuseColor: 0xcc0000, // Overrides global fuse color

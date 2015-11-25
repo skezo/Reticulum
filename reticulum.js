@@ -41,16 +41,18 @@ var Reticulum = (function () {
     fuse.initiate = function( options ) {
         var parameters = options || {};
         
-        this.visible        = parameters.visible       !== false; //default to true;
-        this.globalDuration = parameters.duration      ||  2.5;
-        this.vibratePattern = parameters.vibrate       ||  100;
-        this.color          = parameters.color         ||  0x00fff6;
-        this.innerRadius    = parameters.innerRadius   ||  reticle.innerRadiusTo;
-        this.outerRadius    = parameters.outerRadius   ||  reticle.outerRadiusTo;
+        this.visible        = parameters.visible            !== false; //default to true;
+        this.globalDuration = parameters.duration           ||  2.5;
+        this.vibratePattern = parameters.vibrate            ||  100;
+        this.color          = parameters.color              ||  0x00fff6;
+        this.innerRadius    = parameters.innerRadius        ||  reticle.innerRadiusTo;
+        this.outerRadius    = parameters.outerRadius        ||  reticle.outerRadiusTo;
+        this.clickCancel    = parameters.clickCancelFuse    === undefined ? false : parameters.clickCancelFuse; //default to false;
         this.phiSegments    = 3;
         this.thetaSegments  = 32;
         this.thetaStart     = Math.PI/2;
         this.duration       = this.globalDuration;
+
         
         //var geometry = new THREE.CircleGeometry( reticle.outerRadiusTo, 32, Math.PI/2, 0 );
         var geometry = new THREE.RingGeometry( this.innerRadius, this.outerRadius, this.thetaSegments, this.phiSegments, this.thetaStart, 0 );
@@ -130,6 +132,9 @@ var Reticulum = (function () {
     //Reticle
     reticle.initiate = function( options ) {
         var parameters = options || {};
+
+        parameters.hover = parameters.hover || {};
+        parameters.click = parameters.click || {};
         
         this.active             = true;
         this.visible            = parameters.visible            !== false; //default to true;
@@ -143,8 +148,10 @@ var Reticulum = (function () {
         this.innerRadiusTo      = parameters.hover.innerRadius  || 0.02;
         this.outerRadiusTo      = parameters.hover.outerRadius  || 0.024;
         this.globalColorTo      = parameters.hover.color        || this.color;
-        this.vibratePattern     = parameters.hover.vibrate      || 50;
-        this.hit                = false; 
+        this.vibrateHover       = parameters.hover.vibrate      || 50;
+        this.hit                = false;
+        //Click
+        this.vibrateClick       = parameters.click.vibrate      || 50; 
         //Animation options
         this.speed              = parameters.hover.speed        || 5;
         this.moveSpeed          = 0;
@@ -393,7 +400,7 @@ var Reticulum = (function () {
         
         //Reticle
         //Vibrate
-        vibrate( reticle.vibratePattern );
+        vibrate( reticle.vibrateHover );
         //Does object have an action assigned to it?
         if (threeObject.onGazeOver != null) {
             threeObject.onGazeOver();
@@ -430,12 +437,15 @@ var Reticulum = (function () {
     };
     
     var gazeClick = function( threeObject ) {
-        //Reset the clock
-        threeObject.userData.hitTime = clock.getElapsedTime();
-        //Force gaze to end...this might be to assumptions
-        fuse.update( fuse.duration );
-        //Vibrate
-        vibrate( fuse.vibratePattern );
+        var clickCancelFuse = threeObject.reticulumData.clickCancelFuse != null ? threeObject.reticulumData.clickCancelFuse : fuse.clickCancel;
+        //Cancel Fuse
+        if( clickCancelFuse ) {
+            //Reset the clock
+            threeObject.userData.hitTime = clock.getElapsedTime();
+            //Force gaze to end...this might be to assumptions
+            fuse.update( fuse.duration );
+        }
+        
         //Does object have an action assigned to it?
         if (threeObject.onGazeClick != null) {
             threeObject.onGazeClick();
@@ -456,23 +466,25 @@ var Reticulum = (function () {
             var parameters = options || {};
             
             //Stores object options for reticulum
-            threeObject.reticulumData                           = {};
-            threeObject.reticulumData.gazeable                  = true;
+            threeObject.reticulumData = {};
+            threeObject.reticulumData.gazeable = true;
             //Reticle
             threeObject.reticulumData.reticleHoverColor = null;
             if(parameters.reticleHoverColor) {
                 threeObject.reticulumData.reticleHoverColor = new THREE.Color(parameters.reticleHoverColor);
             }
             //Fuse
-            threeObject.reticulumData.fuseVisible               = parameters.fuseVisible            || null;
             threeObject.reticulumData.fuseDuration              = parameters.fuseDuration           || null;
             threeObject.reticulumData.fuseColor                 = parameters.fuseColor              || null;
+            threeObject.reticulumData.fuseVisible               = parameters.fuseVisible            === undefined ? null : parameters.fuseVisible;
+            threeObject.reticulumData.clickCancelFuse           = parameters.clickCancelFuse        === undefined ? null : parameters.clickCancelFuse;
             //Events
             threeObject.onGazeOver                              = parameters.onGazeOver             || null;
             threeObject.onGazeOut                               = parameters.onGazeOut              || null;
             threeObject.onGazeLong                              = parameters.onGazeLong             || null;
             threeObject.onGazeClick                             = parameters.onGazeClick            || null;
             
+
             //Add object to list
             collisionList.push(threeObject);
         },

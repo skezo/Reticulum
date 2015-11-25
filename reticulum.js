@@ -17,6 +17,8 @@ var Reticulum = (function () {
 
     var frustum;
     var cameraViewProjectionMatrix;
+
+    var parentContainer
     
     //Settings from user
     var settings = {
@@ -68,7 +70,8 @@ var Reticulum = (function () {
         this.mesh.rotation.y = 180*(Math.PI/180); //Make it clockwise
         
         //Add to reticle
-        reticle.mesh.add( this.mesh );
+        //reticle.mesh.add( this.mesh );
+        parentContainer.add( this.mesh );
         //geometry.dispose();
     };
     
@@ -169,13 +172,15 @@ var Reticulum = (function () {
         this.setDepthAndScale();
         
         //Add to camera
-        settings.camera.add( this.mesh );
+        //settings.camera.add( this.mesh );
+        parentContainer.add( this.mesh );
         
     };
     
     //Sets the depth and scale of the reticle - reduces eyestrain and depth issues 
     reticle.setDepthAndScale = function( depth ) {
-        var crosshair = this.mesh;
+        //var crosshair = this.mesh;
+        var crosshair = parentContainer;
         var z = Math.abs( depth || this.restPoint ); //Default to user far setting
         var cameraZ =  settings.camera.position.z;
         //Force reticle to appear the same size - scale
@@ -225,6 +230,10 @@ var Reticulum = (function () {
         //Raycaster Setup
         raycaster = new THREE.Raycaster();
         vector = new THREE.Vector2(0, 0);
+
+        //Create Parent Object for reticle and fuse
+        parentContainer = new THREE.Object3D();
+        settings.camera.add( parentContainer );
 
         //Proximity Setup
         if( settings.proximity ) {

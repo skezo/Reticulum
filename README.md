@@ -37,6 +37,8 @@ Call the Reticulum initializer function and set your options. Options can be set
 Reticulum.init(camera, {
 	proximity: false,
 	clickevents: true,
+	near: null, //near factor of the raycaster (shouldn't be negative and should be smaller than the far property)
+	far: null, //far factor of the raycaster (shouldn't be negative and should be larger than the near property)
 	reticle: {
 		visible: true,
 		restPoint: 1000, //Defines the reticle's resting point when no object has been targeted

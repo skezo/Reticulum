@@ -1,5 +1,5 @@
 /// <reference path="typings/threejs/three.d.ts"/>
-/*! Reticulum - v2.0.1 - 2015-11-25
+/*! Reticulum - v2.0.2 - 2015-12-17
  * http://gqpbj.github.io/examples/basic.html
  *
  * Copyright (c) 2015 Godfrey Q;
@@ -230,17 +230,24 @@ var Reticulum = (function () {
 
     var initiate = function (camera, options) {
         //Update Settings:
-        if (options) {
-            settings.camera = camera; //required
-            settings.proximity = options.proximity || settings.proximity;
-            settings.isClickEnabled = options.clickevents || settings.isClickEnabled;
-            options.reticle = options.reticle || {};
-            options.fuse = options.fuse || {};
-        }
+        options = options || {};
+        
+        settings.camera = camera; //required
+        settings.proximity = options.proximity || settings.proximity;
+        settings.isClickEnabled = options.clickevents || settings.isClickEnabled;
+        options.reticle = options.reticle || {};
+        options.fuse = options.fuse || {};
         
         //Raycaster Setup
         raycaster = new THREE.Raycaster();
         vector = new THREE.Vector2(0, 0);
+        //Update Raycaster 
+        if(options.near && options.near >= 0 ) {
+            raycaster.near = options.near;
+        }
+        if(options.far && options.far >= 0 ) {
+            raycaster.far = options.far;
+        }
 
         //Create Parent Object for reticle and fuse
         parentContainer = new THREE.Object3D();

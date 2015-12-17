@@ -326,15 +326,23 @@ var Reticulum = (function () {
                 newObj = intersects[ i ].object;
                 //If new object is not gazeable skip it.
                 if (!newObj.reticulumData.gazeable) {
+                    if( newObj == INTERSECTED ) { //TO DO: move this else where
+                        gazeOut(INTERSECTED)
+                    }
+                    newObj = null;
                     continue;
                 }
                 //If new object is invisible skip it.
                 if( reticle.ignoreInvisible && !newObj.visible) {
+                    newObj = null;
                     continue;
                 }
                 //No issues let use this one
                 break;
             }
+            
+            //There is no valid object
+            if (newObj === null) return;
 
             //Is it a new object?
             if( INTERSECTED != newObj ) {
@@ -490,7 +498,7 @@ var Reticulum = (function () {
         },
         remove: function (threeObject) {
             var index = collisionList.indexOf(threeObject);
-            threeObject.gazeable = false;
+             threeObject.reticulumData.gazeable = false;
             if (index > -1) {
                 collisionList.splice(index, 1);
             }

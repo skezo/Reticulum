@@ -1,8 +1,8 @@
 #Reticulum
 
-> A simple gaze interaction manager for VR with Three.js. [See examples](http://gqpbj.github.io/Reticulum/)
+> A simple gaze interaction manager for VR with Three.js. [See examples](http://skezo.github.io/Reticulum/)
 
-![Material Design](http://gqpbj.github.io/Reticulum/examples/img/interactivepatterns_displayreticle.png)
+![Material Design](http://skezo.github.io/Reticulum/examples/img/interactivepatterns_displayreticle.png)
 
 ##Purpose
 Reticulum attempts to follow Google's interactive pattern for the [display reticle](http://www.google.com/design/spec-vr/interactive-patterns/display-reticle.html). It creates the illusion of depth by projecting spatially onto targeted objects while maintaining a fixed size so that it is easy to see at all times.
@@ -123,13 +123,13 @@ scene.add(camera);
 
 ## Demos
 
-- [Basic](http://gqpbj.github.io/Reticulum/basic.html)
-- [Proximity](http://gqpbj.github.io/Reticulum/examples/proximity.html) - only display reticle if targeted object is visible
-- [Depth Test](http://gqpbj.github.io/Reticulum/examples/depth.html) - hit moving targets 
-- [Objects in Groups](http://gqpbj.github.io/Reticulum/examples/groups.html) - hit object in group, get world values 
-- [Fuse](http://gqpbj.github.io/Reticulum/examples/fuse.html) - selective objects have fuse
-- [Visibility](http://gqpbj.github.io/Reticulum/examples/visibility.html) - test for hitting only visible objects  
-- [Gazeable](http://gqpbj.github.io/Reticulum/examples/gazeable.html) - test for hitting only gazeable objects  
+- [Basic](http://skezo.github.io/Reticulum/basic.html)
+- [Proximity](http://skezo.github.io/Reticulum/examples/proximity.html) - only display reticle if targeted object is visible
+- [Depth Test](http://skezo.github.io/Reticulum/examples/depth.html) - hit moving targets 
+- [Objects in Groups](http://skezo.github.io/Reticulum/examples/groups.html) - hit object in group, get world values 
+- [Fuse](http://skezo.github.io/Reticulum/examples/fuse.html) - selective objects have fuse
+- [Visibility](http://skezo.github.io/Reticulum/examples/visibility.html) - test for hitting only visible objects  
+- [Gazeable](http://skezo.github.io/Reticulum/examples/gazeable.html) - test for hitting only gazeable objects  
 
 ## Known Issues
 - Ghosting occurs to the reticle and fuse when in VR mode. More details on the issue can found [here](https://github.com/mrdoob/three.js/issues/7041). **A quick workaround** to this issue is adding `camera.updateMatrixWorld();` before the render call (e.g. `manager.render(scene, camera, timestamp);` to the callback function of the `requestAnimationFrame()` method. 

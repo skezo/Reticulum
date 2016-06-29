@@ -3,7 +3,7 @@
   "title": "Reticulum",
   "description": "A gaze interaction manager for VR with three.js, supporting depth.",
   "version": "1.0.0",
-  "homepage": "https://github.com/GQPBJ/Reticulum",
+  "homepage": "https://github.com/skezo/Reticulum",
   "license": "MIT",
   "keywords": [
     "vr",
@@ -12,7 +12,7 @@
     "cardboard"
   ],
   "author": {
-    "name": "Godfrey Q",
+    "name": "Skezo",
     "email": "admin@gqpbj.com"
   },
   "repository": {
@@ -20,7 +20,7 @@
     "url": "git://github.com/GQPBJ/Reticulum.git"
   },
   "bugs": {
-    "url": "https://github.com/GQPBJ/Reticulum/issues"
+    "url": "https://github.com/skezo/Reticulum/issues"
   },
   "dependencies": {},
   "devDependencies": {},

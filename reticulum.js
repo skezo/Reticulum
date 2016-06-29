@@ -1,8 +1,8 @@
 /// <reference path="typings/threejs/three.d.ts"/>
 /*! Reticulum - v2.0.2 - 2015-12-17
- * http://gqpbj.github.io/examples/basic.html
+ * http://skezo.github.io/examples/basic.html
  *
- * Copyright (c) 2015 Godfrey Q;
+ * Copyright (c) 2015 Skezo;
  * Licensed under the MIT license */
 
 var Reticulum = (function () {

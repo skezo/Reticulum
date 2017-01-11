@@ -85,7 +85,8 @@ document.body.appendChild( renderer.domElement );
 var scene = new THREE.Scene();
 
 //Create a three.js camera
-var camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.3, 10000);
+//var camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.3, 10000);
+var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
 //Apply VR headset positional data to camera.
 var controls = new THREE.VRControls( camera );
 controls.standing = true;
@@ -198,14 +199,33 @@ function animate(timestamp) {
 	Reticulum.update();
 	
 	controls.update();
-	camera.updateMatrixWorld(); // Required to stop ghosting - must be placed before render update
+	//camera.updateMatrixWorld(); // Required to stop ghosting - must be placed before render update
 	manager.render(scene, camera, timestamp);
+	effect.render(scene, camera);
 
-	requestAnimationFrame(animate);
+	vrDisplay.requestAnimationFrame(animate);
 	
 }
-animate();
 
+var vrDisplay;
+
+// Get the HMD, and if we're dealing with something that specifies
+// stageParameters, rearrange the scene.
+function setupStage() {
+  navigator.getVRDisplays().then(function(displays) {
+    if (displays.length > 0) {
+      vrDisplay = displays[0];
+      if (vrDisplay.stageParameters) {
+        setStageDimensions(vrDisplay.stageParameters);
+      }
+      vrDisplay.requestAnimationFrame(animate);
+    }
+  });
+}
+
+function setStageDimensions(stage) {
+  //Adjust based on user
+ }
 
 /*
 Handle window resizes
@@ -213,7 +233,7 @@ Handle window resizes
 function onWindowResize() {
 	effect.setSize( window.innerWidth, window.innerHeight );
 	camera.aspect = window.innerWidth / window.innerHeight;
-	camera.updateProjectionMatrix();
+	//camera.updateProjectionMatrix();
 }
 window.addEventListener( 'resize', onWindowResize, false );
 window.addEventListener( 'vrdisplaypresentchange', onWindowResize, true );

@@ -123,7 +123,7 @@ scene.add(camera);
 
 ## Demos
 
-- [Basic](http://skezo.github.io/Reticulum/basic.html)
+- [Basic](http://skezo.github.io/Reticulum/examples/basic.html)
 - [Proximity](http://skezo.github.io/Reticulum/examples/proximity.html) - only display reticle if targeted object is visible
 - [Depth Test](http://skezo.github.io/Reticulum/examples/depth.html) - hit moving targets 
 - [Objects in Groups](http://skezo.github.io/Reticulum/examples/groups.html) - hit object in group, get world values 

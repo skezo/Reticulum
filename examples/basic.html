@@ -64,6 +64,7 @@ WebVRConfig = {
 
 <!-- THREE library, controls and effects -->
 <script src="./js/lib/three.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/85/three.min.js"></script>
 <script src="./js/lib/VRControls.js"></script>
 <script src="./js/lib/VREffect.js"></script>
 <!-- WebVR polyfill and manager -->
@@ -85,7 +86,7 @@ document.body.appendChild( renderer.domElement );
 var scene = new THREE.Scene();
 
 //Create a three.js camera
-var camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.3, 10000);
+var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
 //Apply VR headset positional data to camera.
 var controls = new THREE.VRControls( camera );
 controls.standing = true;
@@ -165,7 +166,7 @@ Reticulum.init(camera, {
 		visible: true,
 		restPoint: 1000, //Defines the reticle's resting point when no object has been targeted
 		color: 0xcc00cc,
-		innerRadius: 0.0001,
+		innerRadius: 0.0004,
 		outerRadius: 0.003,
 		hover: {
 			color: 0x00cccc,

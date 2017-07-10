@@ -1,4 +1,3 @@
-/// <reference path="typings/threejs/three.d.ts"/>
 /*! Reticulum - v2.0.2 - 2015-12-17
  * http://skezo.github.io/examples/basic.html
  *
@@ -55,7 +54,7 @@ var Reticulum = (function () {
         this.duration       = this.globalDuration;
 
         //var geometry = new THREE.CircleGeometry( reticle.outerRadiusTo, 32, Math.PI/2, 0 );
-        var geometry = new THREE.RingGeometry( this.innerRadius, this.outerRadius, this.thetaSegments, this.phiSegments, this.thetaStart, 0 );
+        var geometry = new THREE.RingGeometry( this.innerRadius, this.outerRadius, this.thetaSegments, this.phiSegments, this.thetaStart, Math.PI/2 );
 
         //Make Mesh
         this.mesh = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( {
@@ -105,10 +104,9 @@ var Reticulum = (function () {
         var radiusStep = ( ( this.outerRadius - this.innerRadius ) / this.phiSegments );
         var count = 0;
 
-        for ( var i = 0; i < this.phiSegments + 1; i ++ ) {
+        for ( var i = 0; i <= this.phiSegments; i ++ ) {
 
-            for ( var o = 0; o < this.thetaSegments + 1; o++ ) {
-
+            for ( var o = 0; o <= this.thetaSegments; o++ ) {
                 var vertex = vertices[ count ];
                 var segment = this.thetaStart + o / this.thetaSegments * thetaLength;
                 vertex.x = radius * Math.cos( segment );
@@ -140,7 +138,7 @@ var Reticulum = (function () {
         this.visible            = parameters.visible            !== false; //default to true;
         this.restPoint          = parameters.restPoint          || settings.camera.far-10.0;
         this.globalColor        = parameters.color              || 0xcc0000;
-        this.innerRadius        = parameters.innerRadius        || 0.0001;
+        this.innerRadius        = parameters.innerRadius        || 0.0004;
         this.outerRadius        = parameters.outerRadius        || 0.003;
         this.worldPosition      = new THREE.Vector3();
         this.ignoreInvisible    = parameters.ignoreInvisible    !== false; //default to true;

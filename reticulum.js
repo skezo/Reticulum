@@ -1,4 +1,4 @@
-/*! Reticulum - v2.0.2 - 2015-12-17
+/*! Reticulum - v2.1.2
  * http://skezo.github.io/examples/basic.html
  *
  * Copyright (c) 2015 Skezo;

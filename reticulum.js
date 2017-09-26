@@ -52,7 +52,7 @@ var Reticulum = (function () {
         this.thetaSegments  = 32;
         this.thetaStart     = Math.PI/2;
         this.duration       = this.globalDuration;
-
+        this.timeDone   = false;
         //var geometry = new THREE.CircleGeometry( reticle.outerRadiusTo, 32, Math.PI/2, 0 );
         var geometry = new THREE.RingGeometry( this.innerRadius, this.outerRadius, this.thetaSegments, this.phiSegments, this.thetaStart, Math.PI/2 );
 
@@ -81,6 +81,7 @@ var Reticulum = (function () {
     fuse.out = function() {
         this.active = false;
         this.mesh.visible = false;
+        this.timeDone = false;
         this.update(0);
     }
 
@@ -93,7 +94,7 @@ var Reticulum = (function () {
 
     fuse.update = function(elapsed) {
 
-        if(!this.active) return;
+        if(!this.active || fuse.timeDone) return;
 
         //--RING
         var gazedTime = elapsed/this.duration;
@@ -444,8 +445,11 @@ var Reticulum = (function () {
         }
 
         //Fuse
-        if( gazeTime >= fuse.duration && !fuse.active ) {
+       
+        if( gazeTime >= fuse.duration && !fuse.active  && !fuse.timeDone) {
             //Vibrate
+            fuse.timeDone=true;
+            fuse.mesh.visible = false;
             vibrate( fuse.vibratePattern );
             //Does object have an action assigned to it?
             if (threeObject.onGazeLong != null) {
@@ -541,3 +545,5 @@ var Reticulum = (function () {
         }
     };
 })();
+
+export default Reticulum

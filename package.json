@@ -23,10 +23,15 @@
     "url": "https://github.com/skezo/Reticulum/issues"
   },
   "dependencies": {},
-  "devDependencies": {},
-  "main": "reticulum.js",
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-preset-env": "^1.6.0"
+  },
+  "main": "dist/reticulum.js",
   "engines": {
     "node": ">=0.8.0"
   },
-  "scripts": {}
+  "scripts": {
+    "build": "./node_modules/babel-cli/bin/babel.js --presets env -d dist/ reticulum.js"
+  }
 }
